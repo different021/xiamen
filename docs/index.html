@@ -626,7 +626,9 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':
 const $ = (s, r=document) => r.querySelector(s);
 const amap = zh => 'https://uri.amap.com/search?keyword=' + encodeURIComponent(zh) + '&city=' + encodeURIComponent('厦门');
 const gmap = q => 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(q);
+/* 한국어 이름(관광지)은 네이버, 중국 식당·음식 이름은 바이두 이미지 검색이 결과가 훨씬 많음. 바이두는 중국 현지망에서도 열림 */
 const pic = q => 'https://search.naver.com/search.naver?where=image&query=' + encodeURIComponent(q);
+const picCN = zh => 'https://image.baidu.com/search/index?tn=baiduimage&word=' + encodeURIComponent(zh.replace(/[()（）·丨|]/g, ' ').replace(/\s+/g, ' ').trim() + ' 厦门');
 function lsGet(k, d){ try{ const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; }catch(e){ return d; } }
 function lsSet(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
 
@@ -879,7 +881,7 @@ function restCard(r){
   const q = r.zh ? r.zh + ' 厦门' : r.ko.replace(/\(.*?\)/g,'').trim() + ' Xiamen';
   const links = `<button class="lnk" type="button" data-showmap="r-${r.id}">지도에서 보기</button>` + (r.link ? `<a class="lnk" href="${r.link}" target="_blank" rel="noopener">${esc(r.linkLabel||'상세')}</a>` : '') + (r.zh ? `<a class="lnk" href="${amap(r.zh)}" target="_blank" rel="noopener">Amap</a>` : '') +
     `<a class="lnk" href="${gmap(q)}" target="_blank" rel="noopener">구글</a>` +
-    `<a class="lnk" href="${pic(q)}" target="_blank" rel="noopener">사진</a>`;
+    (r.zh ? `<a class="lnk" href="${picCN(r.zh)}" target="_blank" rel="noopener">사진</a>` : '');
   return `<div class="rest" data-tags="${r.tags.join(' ')}">
     <div class="top"><h4>${esc(r.ko)}</h4>${r.price?`<span class="price">${esc(r.price)}</span>`:''}</div>
     ${r.zh?`<div class="zh">${esc(r.zh)}</div>`:''}
@@ -933,7 +935,7 @@ function dishChip(i){ return dishLink(i[0]); }
 function openPhoto(id){
   const d = DISH[id], p = PHOTOS[id];
   const img = p ? `<div class="img"><img src="${esc(p.thumb)}" alt="${esc(d.ko)} 사진" loading="eager"></div>` : '';
-  const none = p ? '' : `<p class="credit">이 음식은 쓸 수 있는 사진이 없어요. <a href="https://search.naver.com/search.naver?where=image&query=${encodeURIComponent(d.zh)}" target="_blank" rel="noopener">네이버에서 사진 검색</a></p>`;
+  const none = p ? '' : `<p class="credit">이 음식은 쓸 수 있는 사진이 없어요. <a href="https://image.baidu.com/search/index?tn=baiduimage&word=${encodeURIComponent(d.zh)}" target="_blank" rel="noopener">바이두에서 사진 검색</a></p>`;
   const credit = p ? `<p class="credit">사진: ${esc(p.author)} · ${esc(p.license)} · <a href="${esc(p.file)}" target="_blank" rel="noopener">위키미디어 공용</a>${p.match==='GENERIC' ? ' · 비슷한 음식 사진이에요' : ''}</p>` : '';
   $('#photo').innerHTML = `<button type="button" class="close" data-close-photo>닫기</button>
     <div class="card" role="document">${img}
