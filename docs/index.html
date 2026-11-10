@@ -135,7 +135,7 @@ h3{font-size:13px; letter-spacing:.06em; color:var(--muted); margin:26px 0 8px; 
 /* 핀: 흰 동그라미 + 색 테두리 + 그림 아이콘, 아래 꼬리. 회전 없이 가운데 정렬. 지도 위라 테마와 무관하게 고정색 */
 .pin{--c:#D2412C; position:relative; width:32px; height:32px; border-radius:50%; background:#fff; border:3px solid var(--c); box-shadow:0 2px 6px rgba(0,0,0,.35); display:flex; align-items:center; justify-content:center; font-size:17px; line-height:1}
 .pin::after{content:""; position:absolute; left:50%; bottom:-9px; transform:translateX(-50%); border:6px solid transparent; border-top:7px solid var(--c); border-bottom:0}
-.pin.p-rest{--c:#D2412C} .pin.p-place{--c:#0B7F8C} .pin.p-home{--c:#6A4FD0; width:40px; height:40px; font-size:21px}
+.pin.p-rest{--c:#D2412C} .pin.p-place{--c:#0B7F8C} .pin.p-bar{--c:#B5651D} .pin.p-home{--c:#6A4FD0; width:40px; height:40px; font-size:21px}
 .pin.approx{border-style:dashed}
 .plabel.leaflet-tooltip{display:none; background:rgba(255,255,255,.92); color:#13262B; border:0; box-shadow:0 1px 3px rgba(0,0,0,.3); font:700 11px/1.3 var(--f-body); padding:1px 6px; border-radius:6px}
 .plabel.leaflet-tooltip::before{display:none}
@@ -159,7 +159,7 @@ h3{font-size:13px; letter-spacing:.06em; color:var(--muted); margin:26px 0 8px; 
 .nlist li{background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:12px 14px}
 .nlist .top{display:flex; justify-content:space-between; gap:10px; align-items:baseline}
 .kind{display:inline-block; font-size:11px; font-weight:700; border-radius:999px; padding:1px 7px; margin-right:4px; vertical-align:1px}
-.kind.k-rest{background:var(--warn-bg); color:var(--warn)} .kind.k-place{background:var(--soft); color:var(--accent)}
+.kind.k-rest{background:var(--warn-bg); color:var(--warn)} .kind.k-bar{background:#F6E7D6; color:#8A4A12} .kind.k-place{background:var(--soft); color:var(--accent)}
 .nlist .acts{justify-content:flex-start; margin-top:8px}
 .basepick{display:flex; flex-wrap:wrap; gap:6px; align-items:center; font-size:13px; color:var(--muted); margin-top:10px}
 .mapnote{font-size:12px; color:var(--muted); margin:8px 2px 0}
@@ -189,33 +189,18 @@ h3{font-size:13px; letter-spacing:.06em; color:var(--muted); margin:26px 0 8px; 
 .badge{display:inline-block; font-size:11px; font-weight:700; padding:1px 7px; border-radius:999px; background:var(--soft); color:var(--accent); margin-right:4px}
 .badge.hot{background:var(--warn-bg); color:var(--warn)}
 
-#orderbar{
-  position:fixed; left:0; right:0; bottom:0; z-index:8; background:var(--accent); color:var(--accent-ink);
-  padding-top:10px; padding-bottom:calc(10px + env(safe-area-inset-bottom, 0px));
-  padding-left:max(16px, env(safe-area-inset-left, 0px)); padding-right:max(16px, env(safe-area-inset-right, 0px));
-}
-#orderbar button{
-  font:inherit; font-weight:700; width:100%; max-width:640px; margin:0 auto; display:flex; justify-content:space-between;
-  background:transparent; border:0; color:inherit; cursor:pointer; padding:2px 0;
-}
-#sheet{
-  position:fixed; inset:0; z-index:20; background:var(--bg); overflow-y:auto;
-  padding-top:calc(env(safe-area-inset-top, 0px) + 14px); padding-bottom:calc(32px + env(safe-area-inset-bottom, 0px));
-  padding-left:max(16px, env(safe-area-inset-left, 0px)); padding-right:max(16px, env(safe-area-inset-right, 0px));
-}
-#sheet .in{max-width:640px; margin:0 auto}
-.sheethead{display:flex; justify-content:space-between; align-items:center; gap:10px}
-.sheethead h2{margin:0}
-.bigbtn{font:inherit; font-weight:700; border:0; border-radius:10px; padding:9px 14px; cursor:pointer; background:var(--accent); color:var(--accent-ink)}
-.bigbtn.ghost{background:var(--soft); color:var(--accent)}
-.hello{font-family:var(--f-han); font-size:22px; margin:16px 0 4px}
-.oline{display:grid; grid-template-columns:1fr auto; gap:10px; align-items:center; padding-block:12px; border-top:1px solid var(--line)}
-.oline .z{font-family:var(--f-han); font-size:28px; line-height:1.25}
-.oline .k{font-size:13px; color:var(--muted)}
-.qty{display:flex; align-items:center; gap:8px; font-variant-numeric:tabular-nums}
-.qty button{font:inherit; width:34px; height:34px; border-radius:50%; border:1px solid var(--line); background:var(--surface); color:var(--ink); font-size:18px; cursor:pointer}
-.qty span{min-width:20px; text-align:center; font-weight:700}
-.mline{font-family:var(--f-han); font-size:24px; padding-block:6px}
+/* 음식 사진 창: 아래에서 올라오는 시트. 페이지를 떠나지 않음 */
+#photo{position:fixed; inset:0; z-index:30; background:rgba(0,0,0,.55); display:flex; align-items:flex-end; justify-content:center}
+#photo .card{background:var(--surface); color:var(--ink); width:100%; max-width:520px; border-radius:16px 16px 0 0; overflow:hidden;
+  padding-bottom:calc(14px + env(safe-area-inset-bottom, 0px))}
+#photo .img{width:100%; aspect-ratio:4/3; background:var(--soft); display:flex; align-items:center; justify-content:center; color:var(--muted); font-size:14px}
+#photo img{width:100%; height:100%; object-fit:cover; display:block}
+#photo .txt{padding:12px max(16px, env(safe-area-inset-left, 0px)) 0}
+#photo .z{font-family:var(--f-han); font-size:26px; line-height:1.3}
+#photo .k{font-size:15px; color:var(--muted)}
+#photo .credit{font-size:11px; color:var(--muted); margin-top:8px}
+#photo .credit a{color:var(--muted)}
+#photo .close{position:absolute; right:max(12px, env(safe-area-inset-right, 0px)); top:calc(12px + env(safe-area-inset-top, 0px)); font:inherit; font-size:15px; font-weight:700; background:#fff; color:#13262B; border:0; border-radius:999px; padding:8px 14px; cursor:pointer; box-shadow:0 2px 6px rgba(0,0,0,.3)}
 .empty{color:var(--muted); padding-block:20px}
 
 .checks{list-style:none; margin:0; padding:0}
@@ -254,6 +239,8 @@ footer{margin-top:32px; font-size:12px; color:var(--muted)}
   <footer>숙소 Haixi Yue homestay · 황춰로 568호 · 입장료, 시간, 영업 여부는 조사 시점 기준이라 현장에서 확인하세요.</footer>
 </div>
 
+
+<div id="photo" hidden role="dialog" aria-modal="true" aria-label="음식 사진"></div>
 
 <script>
 /* ---------- 데이터 ---------- */
@@ -460,7 +447,7 @@ Object.assign(REST.find(r => r.id==='mnd'), { zh:'闽南大院', where:'环岛�
 Object.assign(REST.find(r => r.id==='ljy'), { tags:['near','local'], where:'环岛南路308号 (쩡춰안 입구 맞은편 바닷가)', area:'숙소에서 택시 10분쯤',
   sig:'데친 문어, 토종돼지 맑은 탕, 굴전, 장무야, 땅콩탕+토란빵. 영업 11:00~21:30',
   rn:'크고 깔끔하고 순한 가정식이에요. 바다 보이는 자리는 일찍 차서 예약하거나 일찍 가세요.' });
-const RFILTERS = [['all','전체'],['near','숙소 근처'],['d1','1일차 저녁'],['hot','훠궈·샤브'],['local','샤먼 향토'],['gly','구랑위']];
+const RFILTERS = [['all','전체'],['near','숙소 근처'],['d1','1일차 저녁'],['hot','훠궈·샤브'],['local','샤먼 향토'],['gly','구랑위'],['npt','난푸퉈사·샤먼대']];
 
 const DICT = [
   { h:'샤먼 향토', items:[
@@ -491,6 +478,92 @@ const MODS = [
   ['hotw','뜨거운 물 주세요','请给热水'],['noice','얼음 빼고','不要冰'],
 ];
 const DISH = {}; DICT.forEach(g => g.items.forEach(i => DISH[i[0]] = {ko:i[1], zh:i[2], alt:i[3]}));
+
+/* 구랑위·난푸퉈사 식당. 좌표는 Ctrip 고덕(GCJ-02) 좌표를 WGS84로 변환한 정확한 값.
+   dishes는 [중국어, 한국어] 쌍으로 적고, 음식 사전에 없으면 여기서 등록 */
+function addR(r, g){
+  g.dishes = g.dishes.map(d => { if(typeof d === 'string') return d; const id = 'x' + Object.keys(DISH).length; DISH[id] = {zh:d[0], ko:d[1]}; return id; });
+  REST.push(r); RGEO[r.id] = g;
+}
+const CT = id => 'https://you.ctrip.com/food/21/' + id + '.html';
+addR({ id:'nsc', ko:'나쓰추 (붉은 벽돌 별장 식당)', zh:'那私厨·红砖老别墅餐厅(鼓浪屿店)', tags:['gly','local'], price:'1인 ¥80쯤', link:'https://you.ctrip.com/yougourmet/restdetail/Kulangsu120058/25999729.html', linkLabel:'Ctrip',
+  where:'鼓浪屿安海路59号 (三一堂 근처)', area:'구랑위 가운데', badge:'구랑위 점심 추천',
+  sig:'노란조기찜, 수제 돌솥 두부, 버섯·토란완자탕, 계화 토란 디저트. 평점 5.0 (리뷰 252개)',
+  rn:'조용한 골목의 옛 별장이고, 싱겁게 해 달라는 요청을 들어줬다는 후기가 있어요. 층이 여러 개라 1층 자리를 부탁하세요. 매운 메뉴(辣·椒)는 피하세요. 10:00~21:00, 전화 +86 189 5921 0290' },
+  { lat:24.447458, lng:118.062716, days:[3], dishes:[['清蒸黄花鱼','노란조기찜'],['石锅豆腐','돌솥 두부'],['芋头丸汤','토란완자탕'],['桂花奶芋泥','계화 토란 디저트']] });
+addR({ id:'xc', ko:'시춰 해산물 식당', zh:'喜厝·海鲜食堂', tags:['gly','local'], price:'1인 ¥64쯤', link:'https://you.ctrip.com/yougourmet/restdetail/Kulangsu120058/61552876.html', linkLabel:'Ctrip',
+  where:'鼓浪屿中华路65号', area:'구랑위 가운데',
+  sig:'김·굴 뚝배기, 굴전, 다금바리찜, 데친 새우',
+  rn:'정원 있는 옛 별장이고 국물이 맑고 순하다는 후기가 있어요(2026년). 매운 요리도 하니 不要辣라고 하세요. 영업시간은 전화로 확인 권장. 10:00~21:30, 전화 +86 136 0091 9947' },
+  { lat:24.447818, lng:118.063643, days:[3], dishes:['zchl','oyster',['清蒸龙胆斑','다금바리찜'],['白灼虾','데친 새우']] });
+addR({ id:'lsf', ko:'린씨 저택 식당 (린스옌지)', zh:'林氏宴集(林氏府公馆酒店)', tags:['gly','local'], price:'1인 ¥123쯤', link:CT(119410133), linkLabel:'Ctrip',
+  where:'鹿礁路11-19号 林氏府 안', area:'싼치우톈 부두에서 걸어서 5분', badge:'조용한 곳',
+  sig:'퉁안식 돼지고기 조림과 찐빵, 노란조기찜, 푸저우 고기완탕, 곰보버섯 맑은 탕',
+  rn:'복원한 옛 저택 안이라 가장 조용하고 편해요. 점심은 11:30~14:00만 해요. 최근 후기가 2023년이라 월요일 영업은 전화로 확인하세요. 전화 +86 592 739 8888' },
+  { lat:24.446410, lng:118.069090, days:[3], dishes:[['同安封肉','퉁안식 돼지고기 조림'],['蒸大黄鱼','노란조기찜'],['福州肉燕','푸저우 고기완탕']] });
+addR({ id:'lhw', ko:'라오하이우 식당', zh:'捞海坞餐厅(鼓浪屿店)', tags:['gly','local'], price:'1인 ¥71쯤', link:'https://you.ctrip.com/yougourmet/restdetail/Kulangsu120058/10560769.html', linkLabel:'Ctrip',
+  where:'鼓浪屿乌埭路35号 (金瓜楼 옆)', area:'일광암 근처',
+  sig:'굴전, 오징어 두부찜, 어묵·고기완자탕, 데친 새우. 평점 4.8 (리뷰 232개)',
+  rn:'골목 안 정원 있는 가정집 분위기이고 값이 적당해요. 干锅香辣虾 같은 매운 메뉴는 피하세요. 10:00~20:30, 전화 +86 592 206 7918' },
+  { lat:24.446983, lng:118.063126, days:[3], dishes:['oyster',['鱿鱼蒸豆腐','오징어 두부찜'],['鱼丸肉丸汤','어묵·고기완자탕']] });
+addR({ id:'rj', ko:'롼지 사차면', zh:'阮记沙茶面', tags:['gly','local'], price:'1인 ¥26쯤', link:'https://you.ctrip.com/yougourmet/restdetail/Kulangsu120058/152073828.html', linkLabel:'Ctrip',
+  where:'鼓浪屿鸡山路23号之五109室', area:'섬 서쪽 (内厝澳 부두 근처)',
+  sig:'사차면, 해산물 사차면, 굴전',
+  rn:'4대째 섬 주민이 하는 동네 가게예요(2026년 후기). 일광암에서 700m쯤 떨어져 있어요. 사차 국물이 살짝 매우니 不辣라고 하세요. 08:00~18:30' },
+  { lat:24.447597, lng:118.056242, days:[3], dishes:['sacha','oyster'] });
+addR({ id:'sj', ko:'선자 민난 창펀', zh:'沈家闽南肠粉', tags:['gly','local'], price:'1인 ¥15쯤', where:'鼓浪屿福建路57号 (용터우루 옆 작은 광장)', area:'구랑위 가운데', badge:'간식',
+  sig:'민난식 창펀(쌀전병 말이), 고기·계란 창펀, 상어 어묵, 굴 걸쭉탕',
+  rn:'부드럽고 순해서 먹기 편해요. 포장 창구는 줄이 길지만 안에 앉는 자리가 있어요. 07:30~22:00' },
+  { lat:24.446553, lng:118.066490, days:[3], dishes:[['闽南肠粉','민난식 창펀'],['牡蛎羹','굴 걸쭉탕']] });
+addR({ id:'kt', ko:'커피 칸타타', zh:'咖啡康塔塔', tags:['gly'], price:'1인 ¥55쯤', link:'https://you.ctrip.com/yougourmet/restdetail/Kulangsu120058/11710164.html', linkLabel:'Ctrip',
+  where:'鼓浪屿泉州路107号', area:'일광암 서쪽', badge:'카페',
+  sig:'바다소금 커피, 단호박 크림수프, 망고 무스',
+  rn:'햇볕 드는 작은 마당이 있고 조용해요(2026년 후기). 일광암 다녀와서 쉬기 좋아요. 10:00~19:00' },
+  { lat:24.445858, lng:118.061644, days:[3], dishes:[] });
+addR({ id:'ss', ko:'산스 차사 (카페·찻집)', zh:'山石茶事', tags:['gly'], price:'1인 ¥52쯤', link:'https://you.ctrip.com/yougourmet/restdetail/Kulangsu120058/153203082.html', linkLabel:'Ctrip',
+  where:'鼓浪屿晃岩路36-1号 (일광암 올라가는 길)', area:'일광암 입구', badge:'카페',
+  sig:'핸드드립 커피, 홍차·재스민차, 피스타치오 브라우니, 치즈케이크',
+  rn:'식물이 많은 남양식 건물이고 아주 조용해요(2026년 후기). 평일 오후 추천. 09:00~18:00' },
+  { lat:24.444858, lng:118.064536, days:[3], dishes:[] });
+addR({ id:'npsc', ko:'난푸퉈 사찰 채식당', zh:'南普陀素菜馆', tags:['npt'], price:'1인 ¥59쯤', link:CT(317597), linkLabel:'Ctrip',
+  where:'思明南路515号 南普陀寺 안', area:'난푸퉈사 안', badge:'채식',
+  sig:'토란 페이스트 요리(香泥藏珍), 나한재 채소볶음, 사찰 소병(기념품용). 평점 4.6 (리뷰 595개)',
+  rn:'아주 순하고 부드러운 음식이에요. 11:00에 열어서 아침보다는 이른 점심용이에요. 점심엔 붐벼요. 전화 +86 592 208 5908' },
+  { lat:24.443537, lng:118.092689, days:[3], dishes:[['罗汉斋','나한재 채소볶음'],['南普陀素饼','사찰 소병']] });
+addR({ id:'wt', ko:'우탕 사차면', zh:'乌糖沙茶面(民族路店)', tags:['npt','local'], price:'1인 ¥41쯤', link:'https://guide.michelin.com/sg/zh_CN/fujian-province/xiamen_1031934/restaurant/wu-tang-sha-cha-mian', linkLabel:'미쉐린 가이드',
+  where:'民族路76号', area:'난푸퉈사에서 1km, 사포웨이와 중산루 사이', badge:'미쉐린',
+  sig:'토핑을 골라 넣는 사차면 (오징어, 굴, 어묵, 두부, 새우)',
+  rn:'샤먼에서 가장 유명한 사차면집이에요. 아침에 열고 오후 2시쯤 닫는다는 후기가 있어요. 줄이 길고 국물이 살짝 매우니 不辣로 주문하세요. 전화 +86 592 204 1658' },
+  { lat:24.445957, lng:118.079561, days:[3], dishes:['sacha','yuwan'] });
+addR({ id:'nn', ko:'뉴뉴 식당 (옛 샤먼 가정식)', zh:'老厦门特色菜·妞妞餐厅', tags:['npt','local'], price:'1인 ¥81쯤', link:CT(12048056), linkLabel:'Ctrip',
+  where:'猫街顶澳仔10号之3 (演武小学 옆)', area:'난푸퉈사에서 500m',
+  sig:'노란조기 간장조림, 옛날식 단지 탕, 병어찜, 땅콩탕. 평점 4.8 (리뷰 137개)',
+  rn:'28년 된 동네 해산물집이고 붉은 벽돌 옛집이에요(2026년 후기). 대표 메뉴 장무야는 생강이 강해요. 전화 +86 189 5928 8559' },
+  { lat:24.441813, lng:118.087412, days:[3], dishes:[['黄花鱼酱油水','노란조기 간장조림'],['瓦罐汤','단지 탕'],'peanut'] });
+
+/* 바: 저녁 먹은 곳 근처. 좌표는 Ctrip 고덕 좌표를 WGS84로 변환한 정확한 값 */
+const BARS = [
+  { id:'ry', ko:'서이 호텔 위스키바', zh:'厦门瑞颐大酒店·威士忌酒吧', near:'중산루 (1일차)', days:[1], lat:24.45232, lng:118.07444, price:'1인 ¥92쯤',
+    hours:'일~목 19:00~23:00, 금·토 ~24:00', type:'호텔 위스키·칵테일 바', drinks:'위스키 150종 이상, 보이차 위스키 칵테일', vibe:'가죽 소파, 은은한 조명. 가장 조용해요', parents:'좋아요', link:CT(134017785) },
+  { id:'tj', ko:'투지 화평1935', zh:'途纪·和平1935', near:'중산루 (1일차)', days:[1], lat:24.45368, lng:118.07121, price:'1인 ¥78쯤',
+    hours:'확인 필요', type:'와인바·비스트로', drinks:'팔로마 칵테일, 구아바·계화 음료', vibe:'창가에서 구랑위 야경, 저녁엔 재즈 밴드', parents:'좋아요', link:CT(152947121) },
+  { id:'reme', ko:'레메 루프 (구랑위 오션뷰 루프탑)', zh:'REME ROOF·鼓浪海景餐酒吧', near:'중산루 (1일차)', days:[1], lat:24.45225, lng:118.07282, price:'1인 ¥114쯤',
+    hours:'매일 16:00~02:00', type:'루프탑 바', drinks:'수제맥주, 칵테일', vibe:'야외 테라스에서 구랑위 야경, 라이브 음악. 늦을수록 시끌벅적', parents:'이른 저녁엔 좋아요', link:CT(149993388) },
+  { id:'gd', ko:'감단 칵테일', zh:'甘单Cocktail', near:'중산루 (1일차)', days:[1], lat:24.46415, lng:118.07673, price:'1인 ¥125쯤',
+    hours:'매일 19:30~02:00', type:'칵테일 바', drinks:'위스키 사워, 꽃향 시그니처 칵테일', vibe:'인더스트리얼 분위기, 바 좌석과 2층 창가', parents:'보통', link:CT(136313032) },
+  { id:'yb', ko:'요우부라오 수제맥주', zh:'优布劳精酿酒馆(开元路店)', near:'중산루 (1일차)', days:[1], lat:24.46134, lng:118.07322, price:'1인 ¥46쯤',
+    hours:'매일 16:00~03:00', type:'수제맥주 펍', drinks:'리치·바다소금 사워, 밀맥주, 생강 스타우트 (시음 가능)', vibe:'작고 캐주얼해요', parents:'가볍게 한 잔은 괜찮아요', link:CT(136228104) },
+  { id:'mw', ko:'마이웨이 지하 칵테일바', zh:'MY WAY地下鸡尾酒吧', near:'중산루 (1일차)', days:[1], lat:24.45432, lng:118.08036, price:'1인 ¥94쯤',
+    hours:'매일 19:00~02:00', type:'스피크이지 칵테일 바', drinks:'주인장이 취향대로 만들어 줘요', vibe:'지하, 커플 분위기', parents:'부부끼리 추천', link:CT(7101381) },
+  { id:'top', ko:'탑라운지 (쌍둥이빌딩 61층)', zh:'Top Lounge天空海岸(世茂双子塔店)', near:'사포웨이·쌍둥이빌딩', days:[1,3], lat:24.43874, lng:118.08328, price:'1인 ¥111쯤',
+    hours:'매일 11:30~01:30', type:'스카이 바', drinks:'베리 구아바 소다, 청포도 우롱, 시그니처 칵테일', vibe:'270도 바다 전망. 창가 자리는 최소 주문 금액이 있고 예약 추천', parents:'좋아요', link:CT(144887738) },
+  { id:'coast', ko:'코스트 (콘래드 호텔 54층)', zh:'COAST·高空海景酒吧(厦门康莱德酒店)', near:'사포웨이·쌍둥이빌딩', days:[1,3], lat:24.43790, lng:118.08433, price:'1인 ¥155쯤',
+    hours:'매일 17:30~23:00', type:'호텔 스카이 바', drinks:'칵테일, 와인', vibe:'고급스럽고 조용해요. 미쉐린 가이드에 오른 레스토랑의 바', parents:'좋아요', link:'https://guide.michelin.com/hk/zh_HK/fujian-province/xiamen_1031934/restaurant/coast-1240760' },
+  { id:'gx', ko:'꽁시 칵테일', zh:'廾匸·gǒng xì·鸡尾酒馆', near:'사포웨이·쌍둥이빌딩', days:[1,3], lat:24.44321, lng:118.08166, price:'1인 ¥105쯤',
+    hours:'매일 20:00~03:00', type:'작은 칵테일 바', drinks:'파인애플·오이·청포도 과일 칵테일 (도수 낮음)', vibe:'길가 야외 자리', parents:'부부끼리 추천', link:'' },
+  { id:'hy', ko:'흑양 수제맥주 펍', zh:'黑羊精酿餐吧(JFC店)', near:'컨벤션센터 (3일차)', days:[3], lat:24.47735, lng:118.18684, price:'1인 ¥103쯤',
+    hours:'매일 10:00~01:00', type:'수제맥주 펍·식당', drinks:'흑양 라거, 피시앤칩스, 바비큐 립', vibe:'가족 분위기, 소파 자리. 최근 후기는 확인 못 했어요', parents:'좋아요', link:CT(17612872) },
+];
 
 const BOOKINGS = [
   ['토루 프라이빗 투어 (11/15)','일요일 차량, 가격, 숙소 픽업, 점심 포함 문의','지금 바로'],
@@ -583,6 +656,7 @@ const fmtKm = d => d < 1 ? `${Math.max(50, Math.round(d*1000/50)*50)}m` : `${d <
 const ITEMS = [
   ...PLACES.filter(p => !p.nopin).map(p => ({ id:'p-'+p.id, kind:p.id==='home'?'home':'place', ko:p.ko, zh:p.zh, days:p.days, lat:p.lat, lng:p.lng, approx:p.approx })),
   ...REST.map(r => ({ id:'r-'+r.id, kind:'rest', ko:r.ko, zh:r.zh, days:RGEO[r.id].days, lat:RGEO[r.id].lat, lng:RGEO[r.id].lng, approx:RGEO[r.id].approx, r, g:RGEO[r.id] })),
+  ...BARS.map(b => ({ id:'b-'+b.id, kind:'bar', ko:b.ko, zh:b.zh, days:b.days, lat:b.lat, lng:b.lng, b })),
 ];
 const BASES = [['p-home','숙소'],['p-zs','중산루'],['p-ltl','구랑위']];
 const MS = { day:'all', kind:'all', mode:'map', base:'p-home', me:null, watch:null };
@@ -604,17 +678,21 @@ function navLinks(it){
     : `<a class="lnk" href="${amapNav}" target="_blank" rel="noopener">Amap</a>`;
   h += `<a class="lnk" href="${gNav}" target="_blank" rel="noopener">구글</a>`;
   if(it.r && it.r.link) h += `<a class="lnk" href="${it.r.link}" target="_blank" rel="noopener">${esc(it.r.linkLabel||'상세')}</a>`;
+  if(it.b && it.b.link) h += `<a class="lnk" href="${it.b.link}" target="_blank" rel="noopener">${it.b.link.includes('michelin') ? '미쉐린 가이드' : 'Ctrip'}</a>`;
   if(it.zh) h += `<button class="copy" type="button" data-copy="${esc(it.zh)}">주소/이름 복사</button>`;
   return h;
 }
 function itemBody(it){
-  const kindLbl = it.kind==='rest' ? '<span class="kind k-rest">식당</span>' : '<span class="kind k-place">' + (it.kind==='home'?'숙소':'장소') + '</span>';
+  const kindLbl = it.kind==='rest' ? '<span class="kind k-rest">식당</span>' : it.kind==='bar' ? '<span class="kind k-bar">바</span>'
+    : '<span class="kind k-place">' + (it.kind==='home'?'숙소':'장소') + '</span>';
   let meta = kindLbl;
   if(it.r){ meta += esc([it.r.price, it.g.where || it.r.area].filter(Boolean).join(' · ')); }
+  else if(it.b){ meta += esc([it.b.price, it.b.near + ' 근처', it.b.hours].join(' · ')); }
   else meta += esc(it.days.map(d => d+'일차').join(', '));
   if(it.approx) meta += ` <span class="approxnote">위치 대략</span>`;
-  const dishes = it.g && it.g.dishes.length ? `<p class="meta">대표 메뉴 (후기 기준) · 누르면 사진</p><div class="chips">${it.g.dishes.map(id => DISH[id] ? dishLink(DISH[id].zh, DISH[id].ko) : '').join('')}</div>` : '';
-  const sig = it.r ? `<p class="meta" style="color:var(--ink)">${esc(it.r.sig)}</p>` : '';
+  const dishes = it.g && it.g.dishes.length ? `<p class="meta">대표 메뉴 (후기 기준) · 📷 누르면 사진</p><div class="chips">${it.g.dishes.map(dishLink).join('')}</div>` : '';
+  const sig = it.r ? `<p class="meta" style="color:var(--ink)">${esc(it.r.sig)}</p>`
+    : it.b ? `<p class="meta" style="color:var(--ink)">${esc(it.b.type)} · ${esc(it.b.drinks)}</p><p class="meta">${esc(it.b.vibe)} · 부모님과: ${esc(it.b.parents)}</p>` : '';
   return `<div class="top"><h4>${esc(it.ko)}</h4><span class="dist">${esc(distLabel(it))}</span></div>
     ${it.zh ? `<div class="zh">${esc(it.zh)}</div>` : ''}
     <p class="meta">${meta}</p>${sig}${dishes}
@@ -629,6 +707,7 @@ const ICON = {
   rest:'<span aria-hidden="true">🍜</span>',
   place:'<span aria-hidden="true">📍</span>',
   home:'<span aria-hidden="true">🏠</span>',
+  bar:'<span aria-hidden="true">🍸</span>',
 };
 const proj = (lat, lng) => curBase==='amap' ? wgs2gcj(lat, lng) : [lat, lng];
 function mstatus(t, warn){ const el = $('#mstatus'); if(!el) return; el.textContent = t; el.classList.toggle('warn', !!warn); }
@@ -654,7 +733,7 @@ function initMap(){
   const legend = L.control({ position:'bottomleft' });
   legend.onAdd = () => {
     const d = L.DomUtil.create('div', 'mlegend');
-    d.innerHTML = `<span><i style="border-color:#D2412C">${ICON.rest}</i>식당</span><span><i style="border-color:#0B7F8C">${ICON.place}</i>장소</span><span><i style="border-color:#6A4FD0">${ICON.home}</i>숙소</span>`;
+    d.innerHTML = `<span><i style="border-color:#D2412C">${ICON.rest}</i>식당</span><span><i style="border-color:#0B7F8C">${ICON.place}</i>장소</span><span><i style="border-color:#B5651D">${ICON.bar}</i>바</span><span><i style="border-color:#6A4FD0">${ICON.home}</i>숙소</span>`;
     return d;
   };
   legend.addTo(LM);
@@ -756,7 +835,7 @@ function mapView(){
   const colors = {1:'var(--d1)',2:'var(--d2)',3:'var(--d3)',4:'var(--d4)'};
   const chips = [['all','전체']].concat(DAYS.map((d,i)=>[String(i+1), d.n+' '+d.title])).map(c =>
     `<button class="chip dayf" type="button" data-f="${c[0]}" aria-pressed="${c[0]==='all'}">${c[0]!=='all'?`<span class="dot" style="color:${colors[c[0]]}"></span>`:''}${esc(c[1])}</button>`).join('');
-  const kinds = [['all','전체'],['rest','식당'],['place','장소']].map(k =>
+  const kinds = [['all','전체'],['rest','식당'],['bar','바'],['place','장소']].map(k =>
     `<button class="chip kindf" type="button" data-k="${k[0]}" aria-pressed="${k[0]==='all'}">${k[1]}</button>`).join('');
   const bases = BASES.map(b => `<button class="chip basef" type="button" data-b="${b[0]}" aria-pressed="${b[0]===MS.base}">${b[1]}</button>`).join('');
   return `<h2>지도</h2><p class="lead">저장한 식당과 장소를 지도에서 보고, 내 위치에서 가까운 곳을 찾아요. 핀을 누르면 대표 메뉴와 길찾기가 나와요.</p>
@@ -797,11 +876,25 @@ function restCard(r){
     <div class="acts">${links}</div></div>`;
 }
 /* 메뉴를 누르면 그 음식 사진 검색이 새 탭으로 열려요 (중국어 이름으로 검색해야 정확) */
-const dishPic = zh => 'https://search.naver.com/search.naver?where=image&query=' + encodeURIComponent(zh);
-function dishLink(zh, ko){
-  return `<a class="chip dish" href="${dishPic(zh)}" target="_blank" rel="noopener"><span class="z">${esc(zh)} <span class="cam" aria-hidden="true">📷</span></span><span class="k">${esc(ko)}</span></a>`;
+/* 음식 사진: 위키미디어 공용의 자유 이용 사진만 사용 (출처·라이선스 표시). 없는 음식은 사진 없이 이름만 크게 보여줌 */
+const PHOTOS = {};
+function dishLink(id){
+  const d = DISH[id]; if(!d) return '';
+  const cam = PHOTOS[id] ? ' <span class="cam" aria-hidden="true">📷</span>' : '';
+  return `<button class="chip dish" type="button" data-photo="${id}"><span class="z">${esc(d.zh)}${cam}</span><span class="k">${esc(d.ko)}</span></button>`;
 }
-function dishChip(i){ return dishLink(i[2], i[1]); }
+function dishChip(i){ return dishLink(i[0]); }
+function openPhoto(id){
+  const d = DISH[id], p = PHOTOS[id];
+  const img = p ? `<img src="${esc(p.thumb)}" alt="${esc(d.ko)} 사진" loading="eager">`
+    : `<a class="lnk" href="https://search.naver.com/search.naver?where=image&query=${encodeURIComponent(d.zh)}" target="_blank" rel="noopener">사진 검색 (네이버)</a>`;
+  const credit = p ? `<p class="credit">사진: ${esc(p.author)} · ${esc(p.license)} · <a href="${esc(p.file)}" target="_blank" rel="noopener">위키미디어 공용</a>${p.match==='GENERIC' ? ' · 비슷한 음식 사진이에요' : ''}</p>` : '';
+  $('#photo').innerHTML = `<button type="button" class="close" data-close-photo>닫기</button>
+    <div class="card" role="document"><div class="img">${img}</div>
+    <div class="txt"><div class="z">${esc(d.zh)}</div><div class="k">${esc(d.ko)}</div>${credit}</div></div>`;
+  $('#photo').hidden = false;
+}
+function closePhoto(){ $('#photo').hidden = true; $('#photo').innerHTML = ''; }
 function foodView(){
   const fchips = RFILTERS.map(f => `<button class="chip rf" type="button" data-f="${f[0]}" aria-pressed="${f[0]==='all'}">${esc(f[1])}</button>`).join('');
   const dict = DICT.map(g => `<h3>${esc(g.h)}</h3><div class="chips">${g.items.map(dishChip).join('')}</div>`).join('');
@@ -893,9 +986,12 @@ async function onClick(e){
     document.querySelectorAll('#restList .rest').forEach(c => { c.hidden = !(b.dataset.f==='all' || c.dataset.tags.split(' ').includes(b.dataset.f)); });
     return;
   }
+  if((b = t.closest('[data-photo]'))){ openPhoto(b.dataset.photo); return; }
+  if(t.closest('[data-close-photo]') || t.id === 'photo'){ closePhoto(); return; }
   if((b = t.closest('.copy'))){ await doCopy(b.dataset.copy, b); return; }
 }
 document.addEventListener('click', onClick);
+document.addEventListener('keydown', e => { if(e.key === 'Escape' && !$('#photo').hidden) closePhoto(); });
 views.addEventListener('change', e => {
   const k = e.target.dataset && e.target.dataset.key; if(!k) return;
   const o = lsGet('xiamen-checks-v2', {}); if(e.target.checked) o[k]=1; else delete o[k]; lsSet('xiamen-checks-v2', o);
