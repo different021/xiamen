@@ -111,7 +111,8 @@ h3{font-size:13px; letter-spacing:.06em; color:var(--muted); margin:26px 0 8px; 
 }
 .chip[aria-pressed="true"]{background:var(--accent); border-color:var(--accent); color:var(--accent-ink)}
 .chip .dot{width:9px; height:9px; border-radius:50%; background:currentColor; flex:none}
-.chip.dish{align-items:flex-start; flex-direction:column; gap:0; border-radius:12px; padding:6px 12px; text-align:left}
+.chip.dish{align-items:flex-start; flex-direction:column; gap:0; border-radius:12px; padding:6px 12px; text-align:left; text-decoration:none}
+.chip.dish .cam{font-size:12px; vertical-align:2px}
 .chip.dish .z{font-family:var(--f-han); font-size:17px; line-height:1.3}
 .chip.dish .k{font-size:12px; opacity:.85}
 .dwrap{display:flex; flex-direction:column; align-items:flex-start; gap:4px; min-width:0}
@@ -253,15 +254,6 @@ footer{margin-top:32px; font-size:12px; color:var(--muted)}
   <footer>숙소 Haixi Yue homestay · 황춰로 568호 · 입장료, 시간, 영업 여부는 조사 시점 기준이라 현장에서 확인하세요.</footer>
 </div>
 
-<div id="orderbar" hidden><button type="button" id="openSheet"><span id="ocount"></span><span>주문서 보기 ›</span></button></div>
-
-<div id="sheet" hidden role="dialog" aria-modal="true" aria-label="주문서">
-  <div class="in">
-    <div class="sheethead"><h2>주문서</h2><button type="button" class="bigbtn ghost" id="closeSheet">닫기</button></div>
-    <p class="lead">직원에게 이 화면을 보여주세요.</p>
-    <div id="sheetBody"></div>
-  </div>
-</div>
 
 <script>
 /* ---------- 데이터 ---------- */
@@ -621,8 +613,7 @@ function itemBody(it){
   if(it.r){ meta += esc([it.r.price, it.g.where || it.r.area].filter(Boolean).join(' · ')); }
   else meta += esc(it.days.map(d => d+'일차').join(', '));
   if(it.approx) meta += ` <span class="approxnote">위치 대략</span>`;
-  const dishes = it.g && it.g.dishes.length ? `<p class="meta">메뉴를 누르면 직원에게 보여줄 중국어 주문서에 담겨요.</p><div class="chips">${it.g.dishes.map(id => DISH[id] ?
-    `<button class="chip dish" type="button" data-dish="${id}" aria-pressed="${!!order.o[id]}"><span class="z">${esc(DISH[id].zh)}</span><span class="k">${esc(DISH[id].ko)}</span></button>` : '').join('')}</div>` : '';
+  const dishes = it.g && it.g.dishes.length ? `<p class="meta">대표 메뉴 (후기 기준) · 누르면 사진</p><div class="chips">${it.g.dishes.map(id => DISH[id] ? dishLink(DISH[id].zh, DISH[id].ko) : '').join('')}</div>` : '';
   const sig = it.r ? `<p class="meta" style="color:var(--ink)">${esc(it.r.sig)}</p>` : '';
   return `<div class="top"><h4>${esc(it.ko)}</h4><span class="dist">${esc(distLabel(it))}</span></div>
     ${it.zh ? `<div class="zh">${esc(it.zh)}</div>` : ''}
@@ -805,16 +796,16 @@ function restCard(r){
     <p class="rn">${esc(r.rn)}</p>
     <div class="acts">${links}</div></div>`;
 }
-function dishChip(i){
-  const alt = i[3] ? ` <span class="k">(${esc(i[3])})</span>` : '';
-  const skip = ['rice','radish','ssauce'].includes(i[0]);
-  const photo = skip ? '' : `<a class="lnk" href="${pic(i[1].replace(/\(.*?\)/g,'').trim() + ' 샤먼')}" target="_blank" rel="noopener">사진</a>`;
-  return `<div class="dwrap"><button class="chip dish" type="button" data-dish="${i[0]}" aria-pressed="false"><span class="z">${esc(i[2])}</span><span class="k">${esc(i[1])}</span></button>${photo}</div>`;
+/* 메뉴를 누르면 그 음식 사진 검색이 새 탭으로 열려요 (중국어 이름으로 검색해야 정확) */
+const dishPic = zh => 'https://search.naver.com/search.naver?where=image&query=' + encodeURIComponent(zh);
+function dishLink(zh, ko){
+  return `<a class="chip dish" href="${dishPic(zh)}" target="_blank" rel="noopener"><span class="z">${esc(zh)} <span class="cam" aria-hidden="true">📷</span></span><span class="k">${esc(ko)}</span></a>`;
 }
+function dishChip(i){ return dishLink(i[2], i[1]); }
 function foodView(){
   const fchips = RFILTERS.map(f => `<button class="chip rf" type="button" data-f="${f[0]}" aria-pressed="${f[0]==='all'}">${esc(f[1])}</button>`).join('');
   const dict = DICT.map(g => `<h3>${esc(g.h)}</h3><div class="chips">${g.items.map(dishChip).join('')}</div>`).join('');
-  return `<h2>맛집, 메뉴</h2><p class="lead">식당을 고르고, 아래 메뉴 사전에서 먹고 싶은 걸 눌러 중국어 주문서를 만들어요.</p>
+  return `<h2>맛집, 메뉴</h2><p class="lead">식당 후보와 샤먼에서 자주 먹는 음식이에요. 음식 이름을 누르면 사진을 볼 수 있어요.</p>
     <div class="chips" id="restChips">${fchips}</div>
     <div id="restList">${REST.map(restCard).join('')}</div>
     <div class="box gap"><h4>해산물 식당 주문 팁</h4><ul>
@@ -823,39 +814,14 @@ function foodView(){
       <li>튀김보다 찜 위주로 시키면 속이 편해요</li>
       <li>대부분 따뜻한 차가 기본이에요. 얼음물은 따로 요청</li>
     </ul></div>
-    <h2 style="margin-top:28px">메뉴 사전</h2><p class="lead">메뉴를 누르면 주문서에 담기고, 아래 사진 버튼은 음식 사진을 새 탭에서 보여줘요. 식당 메뉴판에 없을 수도 있으니 직원에게 물어보세요.</p>
+    <h2 style="margin-top:28px">음식 사전</h2><p class="lead">샤먼에서 자주 보는 음식이에요. 누르면 사진 검색이 열려요. 식당마다 메뉴가 다르니 실제 주문은 메뉴판을 보고 하세요.</p>
     ${dict}
-    <h3>요청 사항</h3><div class="chips">${MODS.map(m=>`<button class="chip dish" type="button" data-mod="${m[0]}" aria-pressed="false"><span class="z">${esc(m[2])}</span><span class="k">${esc(m[1])}</span></button>`).join('')}</div>`;
+    <h3>식당에서 쓰는 한마디</h3>
+    <ul class="plist">${MODS.map(m=>`<li><div><div class="ko">${esc(m[1])}</div><div class="zh">${esc(m[2])}</div></div><div class="acts"><button class="copy" type="button" data-copy="${esc(m[2])}">복사</button></div></li>`).join('')}</ul>`;
 }
 
-/* ---------- 주문 상태 ---------- */
-let order = lsGet('xiamen-order-v1', {o:{}, m:{}});
-function saveOrder(){ lsSet('xiamen-order-v1', order); }
-function orderCount(){ return Object.keys(order.o).length + Object.keys(order.m).length; }
-function syncChips(){
-  document.querySelectorAll('[data-dish]').forEach(b => b.setAttribute('aria-pressed', String(!!order.o[b.dataset.dish])));
-  document.querySelectorAll('[data-mod]').forEach(b => b.setAttribute('aria-pressed', String(!!order.m[b.dataset.mod])));
-  const n = orderCount();
-  $('#ocount').textContent = `선택한 메뉴·요청 ${n}개`;
-  $('#orderbar').hidden = !(n > 0 && (currentView === 'food' || currentView === 'map'));
-}
-function orderText(){
-  const lines = ['我们四位，请给我们这些菜：'];
-  Object.entries(order.o).forEach(([id,q]) => lines.push(`${DISH[id].zh} ×${q}`));
-  MODS.forEach(m => { if(order.m[m[0]]) lines.push(m[2]); });
-  return lines.join('\n');
-}
-function renderSheet(){
-  const dishes = Object.entries(order.o);
-  const mods = MODS.filter(m => order.m[m[0]]);
-  let h = `<div class="hello">我们四位，请给我们这些菜：</div><div class="k" style="color:var(--muted);font-size:13px">저희 네 명이에요. 이 메뉴를 주세요.</div>`;
-  if(!dishes.length && !mods.length) h += `<p class="empty">선택한 메뉴가 없어요.</p>`;
-  h += dishes.map(([id,q]) => `<div class="oline"><div><div class="z">${esc(DISH[id].zh)}</div><div class="k">${esc(DISH[id].ko)}</div></div>
-    <div class="qty"><button type="button" data-q="-1" data-id="${id}" aria-label="줄이기">−</button><span>${q}</span><button type="button" data-q="1" data-id="${id}" aria-label="늘리기">+</button></div></div>`).join('');
-  if(mods.length) h += `<h3>요청 사항</h3>` + mods.map(m => `<div class="mline">${esc(m[2])} <span class="k" style="font-size:13px;color:var(--muted)">${esc(m[1])}</span></div>`).join('');
-  h += `<div style="display:flex;gap:8px;margin-top:20px;flex-wrap:wrap"><button type="button" class="bigbtn" id="copyOrder">텍스트 복사</button><button type="button" class="bigbtn ghost" id="clearOrder">모두 지우기</button></div>`;
-  $('#sheetBody').innerHTML = h;
-}
+/* 주문서 기능은 뺐어요. 다른 곳에서 부르는 이름만 남겨 둠 */
+function syncChips(){}
 
 /* ---------- 준비 뷰 ---------- */
 function prepView(){
@@ -927,27 +893,9 @@ async function onClick(e){
     document.querySelectorAll('#restList .rest').forEach(c => { c.hidden = !(b.dataset.f==='all' || c.dataset.tags.split(' ').includes(b.dataset.f)); });
     return;
   }
-  if((b = t.closest('[data-dish]'))){
-    const id = b.dataset.dish; if(order.o[id]) delete order.o[id]; else order.o[id] = 1;
-    saveOrder(); syncChips(); return;
-  }
-  if((b = t.closest('[data-mod]'))){
-    const id = b.dataset.mod; if(order.m[id]) delete order.m[id]; else order.m[id] = 1;
-    saveOrder(); syncChips(); return;
-  }
-  if(t.closest('#openSheet')){ renderSheet(); $('#sheet').hidden = false; $('#sheet').scrollTop = 0; return; }
-  if(t.closest('#closeSheet')){ $('#sheet').hidden = true; syncChips(); return; }
-  if((b = t.closest('[data-q]'))){
-    const id = b.dataset.id, q = (order.o[id]||1) + Number(b.dataset.q);
-    if(q < 1) delete order.o[id]; else order.o[id] = q;
-    saveOrder(); renderSheet(); syncChips(); return;
-  }
-  if(t.closest('#clearOrder')){ order = {o:{}, m:{}}; saveOrder(); renderSheet(); syncChips(); return; }
-  if(t.closest('#copyOrder')){ await doCopy(orderText(), t.closest('#copyOrder')); return; }
   if((b = t.closest('.copy'))){ await doCopy(b.dataset.copy, b); return; }
 }
 document.addEventListener('click', onClick);
-document.addEventListener('keydown', e => { if(e.key === 'Escape' && !$('#sheet').hidden){ $('#sheet').hidden = true; syncChips(); } });
 views.addEventListener('change', e => {
   const k = e.target.dataset && e.target.dataset.key; if(!k) return;
   const o = lsGet('xiamen-checks-v2', {}); if(e.target.checked) o[k]=1; else delete o[k]; lsSet('xiamen-checks-v2', o);
