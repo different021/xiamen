@@ -131,20 +131,17 @@ h3{font-size:13px; letter-spacing:.06em; color:var(--muted); margin:26px 0 8px; 
 .mstatus.warn{color:var(--warn)}
 /* 지도 색을 빼서 핀이 도드라지게 */
 #lmap .leaflet-tile-pane{filter:grayscale(.6) brightness(1.05) contrast(.9)}
-/* 핀: 색 + 아이콘. 지도 위라 테마와 무관하게 고정색 */
-.pin{width:30px; height:30px; border-radius:50% 50% 50% 0; transform:rotate(-45deg); border:2px solid #fff; box-shadow:0 2px 5px rgba(0,0,0,.4); display:grid; place-items:center}
-/* 물방울 모양은 둥근 쪽이 위라서 아이콘을 살짝 위로 올려 시각적 중심에 맞춤 */
-.pin svg{transform:rotate(45deg) translateY(-1px); width:16px; height:16px; display:block}
-.pin.rest{background:#D2412C} .pin.place{background:#0B7F8C} .pin.home{background:#6A4FD0; width:38px; height:38px; border-width:3px}
-.pin.home svg{width:20px; height:20px}
+/* 핀: 흰 동그라미 + 색 테두리 + 그림 아이콘, 아래 꼬리. 회전 없이 가운데 정렬. 지도 위라 테마와 무관하게 고정색 */
+.pin{--c:#D2412C; position:relative; width:32px; height:32px; border-radius:50%; background:#fff; border:3px solid var(--c); box-shadow:0 2px 6px rgba(0,0,0,.35); display:flex; align-items:center; justify-content:center; font-size:17px; line-height:1}
+.pin::after{content:""; position:absolute; left:50%; bottom:-9px; transform:translateX(-50%); border:6px solid transparent; border-top:7px solid var(--c); border-bottom:0}
+.pin.p-rest{--c:#D2412C} .pin.p-place{--c:#0B7F8C} .pin.p-home{--c:#6A4FD0; width:40px; height:40px; font-size:21px}
 .pin.approx{border-style:dashed}
 .plabel.leaflet-tooltip{display:none; background:rgba(255,255,255,.92); color:#13262B; border:0; box-shadow:0 1px 3px rgba(0,0,0,.3); font:700 11px/1.3 var(--f-body); padding:1px 6px; border-radius:6px}
 .plabel.leaflet-tooltip::before{display:none}
 .show-labels .plabel.leaflet-tooltip{display:block}
 .mlegend{background:rgba(255,255,255,.94); color:#13262B; border-radius:8px; padding:5px 8px; box-shadow:0 1px 4px rgba(0,0,0,.3); display:flex; gap:10px; font:700 12px/1 var(--f-body)}
 .mlegend span{display:inline-flex; align-items:center; gap:4px}
-.mlegend i{width:14px; height:14px; border-radius:50%; border:2px solid #fff; box-shadow:0 0 0 1px rgba(0,0,0,.15); display:grid; place-items:center}
-.mlegend i svg{width:9px; height:9px}
+.mlegend i{font-style:normal; width:20px; height:20px; border-radius:50%; background:#fff; border:2px solid; display:flex; align-items:center; justify-content:center; font-size:11px}
 .me{width:16px; height:16px; border-radius:50%; background:#1A73E8; border:3px solid #fff; box-shadow:0 0 0 2px rgba(26,115,232,.35)}
 .leaflet-popup-content-wrapper,.leaflet-popup-tip{background:var(--surface); color:var(--ink)}
 .leaflet-popup-content{margin:12px 14px; font-family:var(--f-body); font-size:14px; line-height:1.5; min-width:220px}
@@ -160,8 +157,8 @@ h3{font-size:13px; letter-spacing:.06em; color:var(--muted); margin:26px 0 8px; 
 .nlist{list-style:none; margin:12px 0 0; padding:0; display:flex; flex-direction:column; gap:10px}
 .nlist li{background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:12px 14px}
 .nlist .top{display:flex; justify-content:space-between; gap:10px; align-items:baseline}
-.nlist .kind{display:inline-block; font-size:11px; font-weight:700; border-radius:999px; padding:1px 7px; margin-right:4px; vertical-align:1px}
-.kind.rest{background:var(--warn-bg); color:var(--warn)} .kind.place{background:var(--soft); color:var(--accent)}
+.kind{display:inline-block; font-size:11px; font-weight:700; border-radius:999px; padding:1px 7px; margin-right:4px; vertical-align:1px}
+.kind.k-rest{background:var(--warn-bg); color:var(--warn)} .kind.k-place{background:var(--soft); color:var(--accent)}
 .nlist .acts{justify-content:flex-start; margin-top:8px}
 .basepick{display:flex; flex-wrap:wrap; gap:6px; align-items:center; font-size:13px; color:var(--muted); margin-top:10px}
 .mapnote{font-size:12px; color:var(--muted); margin:8px 2px 0}
@@ -354,10 +351,10 @@ const RGEO = {
   bhl:{lat:24.4750, lng:118.1064, days:[1,3], dishes:['hotpot','bball','ssauce'], where:'MIXC(万象城) 지점 기준'},
   rs:{lat:24.4870, lng:118.1185, days:[1,3], dishes:['hotpot','tongue','bball','radish'], approx:1},
   sxl:{lat:24.5050, lng:118.1400, days:[3], dishes:['oyster','gmy'], approx:1},
-  ljy:{lat:24.4280, lng:118.1195, days:[1,2,3], dishes:['oyster','gmy','peanut'], approx:1},
+  ljy:{lat:24.4275, lng:118.1198, days:[1,2,3], dishes:['oyster','gmy','peanut'], approx:1},
   /* 쩡춰안·컨벤션센터 쪽: OSM에 식당이 없어 주변 기준점으로 추정한 좌표 */
   hxs:{lat:24.4282, lng:118.1205, days:[1,2,3], dishes:['gmy','wgdf'], approx:1},
-  jl:{lat:24.4280, lng:118.1197, days:[1,2,3], dishes:['hgj','fish','yzgl'], approx:1},
+  jl:{lat:24.4256, lng:118.1200, days:[1,2,3], dishes:['hgj','fish','yzgl'], approx:1},
   wwss:{lat:24.4275, lng:118.1235, days:[1,2,3], dishes:['lzt'], approx:1},
   chic:{lat:24.4760, lng:118.1855, days:[1,2,3], dishes:['fotiao','gxfan','yuwan'], approx:1},
   yy:{lat:24.4790, lng:118.1140, days:[3], dishes:[], approx:1},
@@ -619,7 +616,7 @@ function navLinks(it){
   return h;
 }
 function itemBody(it){
-  const kindLbl = it.kind==='rest' ? '<span class="kind rest">식당</span>' : '<span class="kind place">' + (it.kind==='home'?'숙소':'장소') + '</span>';
+  const kindLbl = it.kind==='rest' ? '<span class="kind k-rest">식당</span>' : '<span class="kind k-place">' + (it.kind==='home'?'숙소':'장소') + '</span>';
   let meta = kindLbl;
   if(it.r){ meta += esc([it.r.price, it.g.where || it.r.area].filter(Boolean).join(' · ')); }
   else meta += esc(it.days.map(d => d+'일차').join(', '));
@@ -637,17 +634,19 @@ function itemBody(it){
 let LM = null, layerAmap = null, layerOsm = null, curBase = 'amap', markerLayer = null, meLayer = null, tileOk = 0, tileErr = 0;
 const MK = {};
 const ICON = {
-  /* 포크(3.0~7.4)와 나이프(10.4~13.0)를 16칸 가운데(8)에 맞춰 배치 */
-  rest:'<svg viewBox="0 0 16 16" aria-hidden="true"><path fill="#fff" d="M3 1.5h1v4.2h.7V1.5h1v4.2h.7V1.5h1v4.6A2.2 2.2 0 0 1 5.9 8.3v6.2H4.5V8.3A2.2 2.2 0 0 1 3 6.1zM13 1.5v13h-1.5V9.6h-1.1V5.2c0-2.1 1.1-3.7 2.6-3.7z"/></svg>',
-  place:'<svg viewBox="0 0 16 16" aria-hidden="true"><path fill="#fff" d="M3.5 1.5H5v13H3.5zM5 2h8l-2 3 2 3H5z"/></svg>',
-  home:'<svg viewBox="0 0 16 16" aria-hidden="true"><path fill="#fff" d="M8 1.5 1.5 7.2h1.8v7.3h3.4v-4h2.6v4h3.4V7.2h1.8z"/></svg>',
+  /* 폰 기본 그림 문자를 써서 기기마다 가운데에 깔끔하게 그려지게 */
+  rest:'<span aria-hidden="true">🍜</span>',
+  place:'<span aria-hidden="true">📍</span>',
+  home:'<span aria-hidden="true">🏠</span>',
 };
 const proj = (lat, lng) => curBase==='amap' ? wgs2gcj(lat, lng) : [lat, lng];
 function mstatus(t, warn){ const el = $('#mstatus'); if(!el) return; el.textContent = t; el.classList.toggle('warn', !!warn); }
 function initMap(){
   if(LM) return true;
   if(!window.L){ mstatus('지도 프로그램을 불러오지 못했어요. 인터넷 연결을 확인하거나 리스트 보기를 쓰세요.', true); return false; }
-  LM = L.map('lmap', { zoomControl:true }).setView(proj(24.465, 118.11), 12);
+  /* 확대/축소 버튼은 오른쪽 아래로 옮겨서 팝업과 겹치지 않게 */
+  LM = L.map('lmap', { zoomControl:false }).setView(proj(24.465, 118.11), 12);
+  L.control.zoom({ position:'bottomright' }).addTo(LM);
   layerAmap = L.tileLayer('https://webrd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}', { subdomains:'1234', maxZoom:18, attribution:'© 高德地图 Amap' });
   layerOsm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom:19, attribution:'© OpenStreetMap' });
   layerAmap.addTo(LM);
@@ -664,7 +663,7 @@ function initMap(){
   const legend = L.control({ position:'bottomleft' });
   legend.onAdd = () => {
     const d = L.DomUtil.create('div', 'mlegend');
-    d.innerHTML = `<span><i style="background:#D2412C">${ICON.rest}</i>식당</span><span><i style="background:#0B7F8C">${ICON.place}</i>장소</span><span><i style="background:#6A4FD0">${ICON.home}</i>숙소</span>`;
+    d.innerHTML = `<span><i style="border-color:#D2412C">${ICON.rest}</i>식당</span><span><i style="border-color:#0B7F8C">${ICON.place}</i>장소</span><span><i style="border-color:#6A4FD0">${ICON.home}</i>숙소</span>`;
     return d;
   };
   legend.addTo(LM);
@@ -677,11 +676,11 @@ function drawMarkers(){
   if(!LM) return;
   markerLayer.clearLayers();
   visibleItems().forEach(it => {
-    const s = it.kind==='home' ? 38 : 30;
-    const icon = L.divIcon({ className:'', html:`<div class="pin ${it.kind} ${it.approx?'approx':''}">${ICON[it.kind]}</div>`,
-      iconSize:[s,s], iconAnchor:[s/2, s*1.2], popupAnchor:[0, -s], tooltipAnchor:[s/2, -s*0.7] });
+    const s = it.kind==='home' ? 40 : 32;
+    const icon = L.divIcon({ className:'', html:`<div class="pin p-${it.kind} ${it.approx?'approx':''}">${ICON[it.kind]}</div>`,
+      iconSize:[s,s], iconAnchor:[s/2, s+8], popupAnchor:[0, -(s+4)], tooltipAnchor:[s/2, -(s/2+8)] });
     const m = L.marker(proj(it.lat, it.lng), { icon, title:it.ko, zIndexOffset: it.kind==='home' ? 500 : it.kind==='rest' ? 100 : 0 })
-      .bindPopup(() => `<div class="pc">${itemBody(it)}</div>`, { maxWidth:290 })
+      .bindPopup(() => `<div class="pc">${itemBody(it)}</div>`, { maxWidth:290, autoPanPaddingTopLeft:[10,60], autoPanPaddingBottomRight:[60,40] })
       .bindTooltip(it.kind==='home' ? '숙소' : it.ko.replace(/\(.*?\)/g,'').trim(), { permanent:true, direction:'right', className:'plabel', interactive:false });
     MK[it.id] = m; markerLayer.addLayer(m);
   });
