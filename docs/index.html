@@ -703,7 +703,7 @@ function itemBody(it){
   else if(it.b){ meta += esc([it.b.price, it.b.near + ' 근처', it.b.hours].join(' · ')); }
   else meta += esc(it.days.map(d => d+'일차').join(', '));
   if(it.approx) meta += ` <span class="approxnote">위치 대략</span>`;
-  const dishes = it.g && it.g.dishes.length ? `<p class="meta">대표 메뉴 (후기 기준) · 📷 누르면 사진</p><div class="chips">${it.g.dishes.map(dishLink).join('')}</div>` : '';
+  const dishes = it.g && it.g.dishes.length ? `<p class="meta">대표 메뉴 (후기 기준) · 📷 표시는 누르면 사진</p><div class="chips">${it.g.dishes.map(dishLink).join('')}</div>` : '';
   const sig = it.r ? `<p class="meta" style="color:var(--ink)">${esc(it.r.sig)}</p>`
     : it.b ? `<p class="meta" style="color:var(--ink)">${esc(it.b.type)} · ${esc(it.b.drinks)}</p><p class="meta">${esc(it.b.vibe)} · 부모님과: ${esc(it.b.parents)}</p>` : '';
   return `<div class="top"><h4>${esc(it.ko)}</h4><span class="dist">${esc(distLabel(it))}</span></div>
@@ -890,7 +890,40 @@ function restCard(r){
 }
 /* 메뉴를 누르면 그 음식 사진 검색이 새 탭으로 열려요 (중국어 이름으로 검색해야 정확) */
 /* 음식 사진: 위키미디어 공용의 자유 이용 사진만 사용 (출처·라이선스 표시). 없는 음식은 사진 없이 이름만 크게 보여줌 */
-const PHOTOS = {};
+const PHOTOS = {
+  sacha:{"thumb":"img/sacha.jpg","file":"https://commons.wikimedia.org/wiki/File:Mr_Lin_seafood_shachamian.jpg","license":"CC BY-SA 4.0","author":"Jpatokal","match":"EXACT"},
+  oyster:{"thumb":"img/oyster.jpg","file":"https://commons.wikimedia.org/wiki/File:Oyster_omelette_in_Singapore.jpg","license":"CC BY-SA 4.0","author":"Pauloleong2002","match":"EXACT"},
+  gmy:{"thumb":"img/gmy.jpg","file":"https://commons.wikimedia.org/wiki/File:Quanzhou-style_Kiu%E2%81%BF-b%C3%B3-ah_(Ginger_Duck)_at_Yipin_Xiangqing_Restaurant,_Beijing_(20240908174515).jpg","license":"CC BY-SA 4.0","author":"N509FZ","match":"EXACT"},
+  tsd:{"thumb":"img/tsd.jpg","file":"https://commons.wikimedia.org/wiki/File:%E5%9C%9F%E7%AC%8B%E5%86%BB.jpg","license":"CC BY-SA 4.0","author":"Caizzz","match":"EXACT"},
+  yuwan:{"thumb":"img/yuwan.jpg","file":"https://commons.wikimedia.org/wiki/File:Fuzhou_Yu_Wan.jpg","license":"CC BY-SA 4.0","author":"Lennartbj","match":"EXACT"},
+  peanut:{"thumb":"img/peanut.jpg","file":"https://commons.wikimedia.org/wiki/File:Peanut_soup.jpg","license":"CC BY-SA 2.5","author":"ddio","match":"EXACT"},
+  sxc:{"thumb":"img/sxc.jpg","file":"https://commons.wikimedia.org/wiki/File:Grass_jelly_in_Tung_Yuen_Chinese_Restaurant.jpg","license":"CC BY-SA 4.0","author":"Peachyeung316","match":"GENERIC"},
+  zong:{"thumb":"img/zong.jpg","file":"https://commons.wikimedia.org/wiki/File:1980%E7%83%A7%E8%82%89%E7%B2%BD%E5%89%8D%E5%9F%94%E5%BA%97%E7%9A%84%E8%8F%9C%E5%93%81.jpg","license":"CC BY-SA 4.0","author":"向史公哲曰","match":"EXACT"},
+  wxt:{"thumb":"img/wxt.jpg","file":"https://commons.wikimedia.org/wiki/File:Ngoh_Hiang_(52705597159).jpg","license":"CC BY 2.0","author":"Choo Yut Shing from Singapore, Singapore","match":"EXACT"},
+  yubao:{"thumb":"img/yubao.jpg","file":"https://commons.wikimedia.org/wiki/File:Taro_bag_-_Xiamen_-_20160805.jpg","license":"CC BY-SA 4.0","author":"DragonSamYU","match":"EXACT"},
+  runbing:{"thumb":"img/runbing.jpg","file":"https://commons.wikimedia.org/wiki/File:LunBhia.jpg","license":"CC BY-SA 3.0","author":"Sjschen.","match":"EXACT"},
+  fotiao:{"thumb":"img/fotiao.jpg","file":"https://commons.wikimedia.org/wiki/File:Fotiaoqiang_at_Juchunyuan,_Fuzhou_(20250127114656).jpg","license":"CC BY-SA 4.0","author":"N509FZ","match":"EXACT"},
+  hotpot:{"thumb":"img/hotpot.jpg","file":"https://commons.wikimedia.org/wiki/File:%E6%BD%AE%E6%B1%95%E7%89%9B%E8%82%89%E7%81%AB%E9%94%85.jpg","license":"CC BY-SA 4.0","author":"Guwiqiie","match":"EXACT"},
+  bball:{"thumb":"img/bball.jpg","file":"https://commons.wikimedia.org/wiki/File:Beef_Ball_Soup_-_20170301.jpg","license":"CC BY-SA 4.0","author":"DragonSamYU","match":"EXACT"},
+  hxz:{"thumb":"img/hxz.jpg","file":"https://commons.wikimedia.org/wiki/File:Blue_swimmer_crab_congee_by_avlxyz.jpg","license":"CC BY-SA 2.0","author":"avlxyz","match":"GENERIC"},
+  rwt:{"thumb":"img/rwt.jpg","file":"https://commons.wikimedia.org/wiki/File:Hsinchu_Pork_ball.jpg","license":"CC BY-SA 4.0","author":"Yuriy kosygin","match":"EXACT"},
+  gll:{"thumb":"img/gll.jpg","file":"https://commons.wikimedia.org/wiki/File:%E8%8F%A0%E8%90%9D%E5%92%95%E5%99%9C%E8%82%89.jpg","license":"CC BY-SA 3.0","author":"Walter Grassroot","match":"EXACT"},
+  yny:{"thumb":"img/yny.jpg","file":"https://commons.wikimedia.org/wiki/File:Food_%E8%8A%8B%E6%B3%A5%E9%A6%99%E9%85%A5%E9%B4%A8,_%E7%BE%8A%E6%88%90%E5%B0%8F%E9%A4%A8,_%E7%BE%8A%E5%9F%8E%E5%B0%8F%E9%A4%A8,_%E5%8F%B0%E5%8C%97_(17835884220).jpg","license":"CC BY-SA 2.0","author":"bryan... from Taipei, Taiwan","match":"EXACT"},
+  hgdf:{"thumb":"img/hgdf.jpg","file":"https://commons.wikimedia.org/wiki/File:Clam_soup.JPG","license":"CC BY-SA 3.0","author":"Jdcgumpal","match":"GENERIC"},
+  mxh:{"thumb":"img/mxh.jpg","file":"https://commons.wikimedia.org/wiki/File:M%C4%AB-su%C3%A0nn-k%C3%B4o_in_Quanzhou_(20200929220207).jpg","license":"CC BY-SA 4.0","author":"N509FZ","match":"EXACT"},
+  scyp:{"thumb":"img/scyp.jpg","file":"https://commons.wikimedia.org/wiki/File:Food_%E6%B2%99%E8%8C%B6%E7%81%AB%E9%8D%8B,_%E9%BA%92%E9%BA%9F%E9%96%A3,_%E9%BA%92%E9%BA%9F%E9%96%A3%E6%B2%99%E8%8C%B6%E7%81%AB%E9%8D%8B,_%E5%8F%B0%E5%8C%97_(14816998650).jpg","license":"CC BY-SA 2.0","author":"bryan... from Taipei, Taiwan","match":"EXACT"},
+  hxg:{"thumb":"img/hxg.jpg","file":"https://commons.wikimedia.org/wiki/File:%E5%B1%B1%E4%B8%9C%E6%B5%B7%E9%B2%9C%E9%94%85.jpg","license":"CC BY-SA 4.0","author":"Suginami","match":"EXACT"},
+  mjg:{"thumb":"img/mjg.jpg","file":"https://commons.wikimedia.org/wiki/File:%E5%8F%B0%E5%8D%97%E5%9C%9F%E9%AD%A0%E9%AD%9A%E7%BE%B9_(14370940821).jpg","license":"CC BY-SA 2.0","author":"中岑 范姜 from 台北, 台灣","match":"EXACT"},
+  wgdf:{"thumb":"img/wgdf.jpg","file":"https://commons.wikimedia.org/wiki/File:Clam_soup.JPG","license":"CC BY-SA 3.0","author":"Jdcgumpal","match":"GENERIC"},
+  hgj:{"thumb":"img/hgj.jpg","file":"https://commons.wikimedia.org/wiki/File:3_pieces_of_har_gow_at_Plum_Blossom_Room_20230125.jpg","license":"CC BY-SA 4.0","author":"Solomon203","match":"EXACT"},
+  yzgl:{"thumb":"img/yzgl.jpg","file":"https://commons.wikimedia.org/wiki/File:Mango_Pomelo_Sago_by_Lei_Garden.jpg","license":"CC BY 2.0","author":"Blowing Puffer Fish","match":"EXACT"},
+  lzt:{"thumb":"img/lzt.jpg","file":"https://commons.wikimedia.org/wiki/File:Mushroom_hot_pot_in_Yunnan.jpg","license":"CC BY 4.0","author":"Hhhlx","match":"GENERIC"},
+  scallop:{"thumb":"img/scallop.jpg","file":"https://commons.wikimedia.org/wiki/File:Minced_garlic_glass_noodle_scallops.jpg","license":"CC BY 2.0","author":"lazy fri13th","match":"EXACT"},
+  fish:{"thumb":"img/fish.jpg","file":"https://commons.wikimedia.org/wiki/File:HK_SW_%E4%B8%8A%E7%92%B0_Sheung_Wan_%E5%BA%B7%E5%A8%81%E8%8A%B1%E5%9C%92_Hongway_Garden_%E5%8C%97%E5%9C%92%E9%85%92%E5%AE%B6_North_Garden_Restaurant_n_%E6%B5%B7%E6%B8%AF%E9%85%92%E5%AE%B6_Victoria_Harbour_Restaurant_food_%E6%B8%85%E8%92%B8%E8%9D%B4%E8%9D%B6%E7%B4%85%E6%9D%B1%E6%98%9F%E6%96%91%E9%AD%9A_steamed_red_fish_April_2026_N13P_01.jpg","license":"CC0","author":"EWOJN alane Bosuu 038","match":"EXACT"},
+  meicai:{"thumb":"img/meicai.jpg","file":"https://commons.wikimedia.org/wiki/File:Cuisine_of_China_0074.JPG","license":"Public domain","author":"Brücke-Osteuropa","match":"EXACT"},
+  egg:{"thumb":"img/egg.jpg","file":"https://commons.wikimedia.org/wiki/File:Chinese_egg_fried_rice.jpg","license":"CC BY-SA 4.0","author":"Euniceyeoh07","match":"EXACT"},
+  greens:{"thumb":"img/greens.jpg","file":"https://commons.wikimedia.org/wiki/File:Stir_Fried_Bok_Choy,_Aug_2025.jpg","license":"CC BY-SA 4.0","author":"Ralff Nestor Nacor","match":"EXACT"},
+};
 function dishLink(id){
   const d = DISH[id]; if(!d) return '';
   const cam = PHOTOS[id] ? ' <span class="cam" aria-hidden="true">📷</span>' : '';
@@ -899,12 +932,12 @@ function dishLink(id){
 function dishChip(i){ return dishLink(i[0]); }
 function openPhoto(id){
   const d = DISH[id], p = PHOTOS[id];
-  const img = p ? `<img src="${esc(p.thumb)}" alt="${esc(d.ko)} 사진" loading="eager">`
-    : `<a class="lnk" href="https://search.naver.com/search.naver?where=image&query=${encodeURIComponent(d.zh)}" target="_blank" rel="noopener">사진 검색 (네이버)</a>`;
+  const img = p ? `<div class="img"><img src="${esc(p.thumb)}" alt="${esc(d.ko)} 사진" loading="eager"></div>` : '';
+  const none = p ? '' : `<p class="credit">이 음식은 쓸 수 있는 사진이 없어요. <a href="https://search.naver.com/search.naver?where=image&query=${encodeURIComponent(d.zh)}" target="_blank" rel="noopener">네이버에서 사진 검색</a></p>`;
   const credit = p ? `<p class="credit">사진: ${esc(p.author)} · ${esc(p.license)} · <a href="${esc(p.file)}" target="_blank" rel="noopener">위키미디어 공용</a>${p.match==='GENERIC' ? ' · 비슷한 음식 사진이에요' : ''}</p>` : '';
   $('#photo').innerHTML = `<button type="button" class="close" data-close-photo>닫기</button>
-    <div class="card" role="document"><div class="img">${img}</div>
-    <div class="txt"><div class="z">${esc(d.zh)}</div><div class="k">${esc(d.ko)}</div>${credit}</div></div>`;
+    <div class="card" role="document">${img}
+    <div class="txt"><div class="z">${esc(d.zh)}</div><div class="k">${esc(d.ko)}</div>${credit}${none}</div></div>`;
   $('#photo').hidden = false;
 }
 function closePhoto(){ $('#photo').hidden = true; $('#photo').innerHTML = ''; }
