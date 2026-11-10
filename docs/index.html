@@ -330,7 +330,7 @@ const DAYS = [
 
 /* 좌표는 WGS84(GPS 기준). approx:1 은 주소만 알고 정확한 위치는 모르는 곳 */
 const PLACES = [
-  { id:'home', ko:'숙소 (Haixi Yue homestay)', zh:'福建省厦门市思明区黄厝路568号', days:[1,2,3,4], small:1, lat:24.4470, lng:118.1550, approx:1 },
+  { id:'home', ko:'숙소 (Haixi Yue homestay)', zh:'福建省厦门市思明区黄厝路568号', days:[1,2,3,4], small:1, lat:24.4476, lng:118.1557, approx:1 },
   { id:'apt', ko:'공항', zh:'厦门高崎国际机场', days:[1,4], lat:24.5438, lng:118.1327 },
   { id:'zs', ko:'중산루 보행자거리', zh:'中山路步行街', days:[1], lat:24.4568, lng:118.0775 },
   { id:'ysy', ko:'윈수이야오 고진', zh:'云水谣古镇', days:[2], lat:24.6681, lng:117.0897 },
@@ -350,14 +350,27 @@ const PLACES = [
 /* 식당 위치와 대표 메뉴(메뉴 사전 id). days는 어느 날 식사에 어울리는지 */
 const RGEO = {
   qcj:{lat:24.4573, lng:118.0739, days:[1], dishes:['gmy','zcr','tofu']},
-  mnd:{lat:24.4530, lng:118.1660, days:[1,3], dishes:['tsd','oyster'], approx:1},
+  mnd:{lat:24.4930, lng:118.1950, days:[1,3], dishes:['oyster','gmy'], approx:1},
   bhl:{lat:24.4750, lng:118.1064, days:[1,3], dishes:['hotpot','bball','ssauce'], where:'MIXC(万象城) 지점 기준'},
   rs:{lat:24.4870, lng:118.1185, days:[1,3], dishes:['hotpot','tongue','bball','radish'], approx:1},
   sxl:{lat:24.5050, lng:118.1400, days:[3], dishes:['oyster','gmy'], approx:1},
-  ljy:{lat:24.4330, lng:118.1080, days:[3], dishes:['oyster','zcr','fotiao'], approx:1},
+  ljy:{lat:24.4280, lng:118.1195, days:[1,2,3], dishes:['oyster','gmy','peanut'], approx:1},
+  /* 쩡춰안·컨벤션센터 쪽: OSM에 식당이 없어 주변 기준점으로 추정한 좌표 */
+  hxs:{lat:24.4282, lng:118.1205, days:[1,2,3], dishes:['gmy','wgdf'], approx:1},
+  jl:{lat:24.4280, lng:118.1197, days:[1,2,3], dishes:['hgj','fish','yzgl'], approx:1},
+  wwss:{lat:24.4275, lng:118.1235, days:[1,2,3], dishes:['lzt'], approx:1},
+  chic:{lat:24.4760, lng:118.1855, days:[1,2,3], dishes:['fotiao','gxfan','yuwan'], approx:1},
   yy:{lat:24.4790, lng:118.1140, days:[3], dishes:[], approx:1},
   hsl:{lat:24.4475, lng:118.0675, days:[3], dishes:[]},
   snk:{lat:24.4560, lng:118.0711, days:[1], dishes:['peanut','yuwan']},
+  /* 숙소 근처: 좌표는 Ctrip 페이지의 고덕(GCJ-02) 좌표를 WGS84로 변환 */
+  hyj:{lat:24.44628, lng:118.15357, days:[1,2,3], dishes:['hxz','crab','fish']},
+  zx:{lat:24.44629, lng:118.15379, days:[1,2,3], dishes:['oyster','cmx','rwt']},
+  mxp:{lat:24.44606, lng:118.15325, days:[1,2,3], dishes:['gll','yny','lbxf']},
+  px:{lat:24.44609, lng:118.15307, days:[1,2,3], dishes:['gmy','zchl','hgdf']},
+  lmm:{lat:24.44853, lng:118.15280, days:[1,2,3,4], dishes:['fish','oyster','sacha']},
+  xcg:{lat:24.43812, lng:118.14424, days:[1,2,3], dishes:['mxh','scyp','fish']},
+  cmfs:{lat:24.43244, lng:118.13640, days:[1,2,3], dishes:['hxg','mjg','gmy']},
 };
 
 const PHRASES = [
@@ -405,7 +418,60 @@ const REST = [
     sig:'푹 끓인 달콤하고 고소한 땅콩 국물',
     rn:'식후나 아침에 좋아요. 위완(생선 완자)은 중산로 75호 쪽에서 파는 곳이 있어요.' },
 ];
-const RFILTERS = [['all','전체'],['d1','1일차 저녁'],['hot','훠궈·샤브'],['local','샤먼 향토'],['gly','구랑위']];
+REST.push(
+  { id:'hyj', ko:'해어가 해산물식당', zh:'海渔家餐厅(黄厝店)', tags:['near','local'], price:'1인 ¥90쯤', link:'https://you.ctrip.com/food/21/22636598.html', linkLabel:'Ctrip',
+    where:'黄厝路黄厝村黄厝社205-101号 (버스 종점 옆, 바다 쪽)', area:'숙소에서 걸어서 약 260m',
+    sig:'전복찜, 돼지고기 완자 꽃게찜, 해산물 뚝배기죽, 다금바리찜. Ctrip 평점 5.0 (리뷰 95개)',
+    rn:'10년 넘은 집이고 룸이 있어요. 죽과 찜 요리는 순해요. 수조 해산물은 주문 전에 1근(500g) 가격을 꼭 물어보세요. 전화 0592-2197273', badge:'숙소 근처' },
+  { id:'zx', ko:'진선 민난 소식당', zh:'珍鲜闽南小排档(黄厝店)', tags:['near','local'], price:'1인 ¥67쯤', link:'https://you.ctrip.com/food/21/22594464.html', linkLabel:'Ctrip',
+    where:'黄厝路黄厝公交场站旁', area:'숙소에서 걸어서 약 240m',
+    sig:'굴전, 볶은 면선(가는 국수), 장저우 고기완자탕, 간장조림 생선',
+    rn:'맵지 않은 민난 가정식이고 둥근 큰 테이블이 있어요. 식사 시간엔 붐벼서 일찍 가는 게 좋아요. 香辣蟹(매운 게)는 매워요.', badge:'숙소 근처' },
+  { id:'mxp', ko:'민샤오파이 푸젠요리', zh:'闽小派·福建菜(黄厝店)', tags:['near','local'], price:'1인 ¥74쯤', link:'https://you.ctrip.com/food/21/151712747.html', linkLabel:'Ctrip',
+    where:'黄厝社110-6号', area:'숙소에서 걸어서 약 300m',
+    sig:'푸젠식 탕수육, 토란 오리, 무 짭짤밥, 함란 노른자 새우',
+    rn:'바닷가 가깝고 창가 자리가 있어요. 달콤짭짤한 요리가 많아 부모님 입맛에 무난해요. 麻辣·香辣 들어간 메뉴는 피하세요.', badge:'숙소 근처' },
+  { id:'px', ko:'핀셴 해산물식당', zh:'品鲜海鲜餐厅(黄厝店)', tags:['near','local'], price:'1인 ¥66쯤', link:'https://you.ctrip.com/food/21/122846569.html', linkLabel:'Ctrip',
+    where:'黄厝中路53-1号 (蜜雪冰城 옆)', area:'숙소에서 걸어서 약 310m',
+    sig:'장무야(생강 오리), 김·굴 뚝배기, 어묵탕, 바지락 두부탕',
+    rn:'순한 국물 요리가 많고 세트 메뉴(套餐)가 가성비 좋다는 후기가 있어요. 香辣蟹, 酸菜鱼는 매워요.', badge:'숙소 근처' },
+  { id:'lmm', ko:'뤼엄마 가정식', zh:'吕妈妈私房菜(黄厝店)', tags:['near','local'], price:'1인 ¥52쯤', link:'https://you.ctrip.com/food/21/122857636.html', linkLabel:'Ctrip',
+    where:'黄厝茂后300-1号 (농구장 옆)', area:'숙소에서 걸어서 약 310m',
+    sig:'광어찜, 장무야, 굴전, 사차면',
+    rn:'맵지 않고 짭짤한 가정식이고 양이 많아요. 작은 집이라 후기는 적어요(5개).', badge:'숙소 근처' },
+  { id:'xcg', ko:'해열산장호텔 샹차궁 중식당', zh:'海悦山庄酒店·香茶宫中餐厅', tags:['near','local'], price:'1인 ¥144쯤', link:'https://you.ctrip.com/food/21/15967140.html', linkLabel:'Ctrip',
+    where:'环岛南路3999号 海悦山庄酒店 1층', area:'숙소에서 약 1.6km, 택시',
+    sig:'샤먼 면선죽(面线糊), 사차 전골, 간장조림 조기, 갓채 밥',
+    rn:'조용하고 넓은 호텔 식당이라 붐비지 않아요. 맛은 평범하다는 후기도 있어요. 毛血旺은 매워요. 전화 0592-5023333', badge:'조용한 곳' },
+  { id:'cmfs', ko:'딸기부부 샤먼요리', zh:'草莓夫妇丨厦门菜(黄厝店)', tags:['near','local'], price:'1인 ¥109쯤', link:'https://you.ctrip.com/food/21/148428535.html', linkLabel:'Ctrip',
+    where:'环岛南路黄厝溪头下70号', area:'숙소에서 약 2.6km, 택시',
+    sig:'해산물 전골, 삼치 걸쭉탕, 간장 다금바리찜, 장무야',
+    rn:'찜 생선과 해산물 전골은 순해요. 최근(2026년 11월) 후기가 있어 영업 중으로 보여요. 후기 수는 적어요(7개).' },
+  { id:'hxs', ko:'하이셴성 오션뷰 식당', zh:'海鲜生全海景餐厅(曾厝垵天桥店)', tags:['near','local'], price:'1인 ¥74쯤', link:'https://ae.trip.com/restaurant/china/xiamen/detail/HAI%20XIAN%20SHENG-135958932', linkLabel:'Trip.com',
+    where:'环岛南路296-4号 (쩡춰안 육교 옆 바닷가)', area:'숙소에서 택시 10분쯤',
+    sig:'장무야, 백합조개 두부탕, 알배기 게 구이',
+    rn:'바다를 보며 먹는 가성비 식당이에요. 2025년 후기가 있어요. 해산물은 주문 전에 1근 가격과 무게를 확인하세요. 육교 쪽은 계단이 있으니 택시로 바닷가 쪽에 내리세요.' },
+  { id:'jl', ko:'자리 해산물 대주루 (딤섬)', zh:'佳丽海鲜大酒楼(环岛海景店)', tags:['near','local'], price:'1인 ¥110쯤', link:'https://ph.trip.com/restaurant/china/xiamen/detail/JIA%20LI%20SEAFOOD%20RESTAURANT-24412092', linkLabel:'Trip.com',
+    where:'环岛南路306号 (린지아 옆)', area:'숙소에서 택시 10분쯤',
+    sig:'새우 하가우 등 딤섬(점심), 다금바리 찜, 망고 디저트',
+    rn:'딤섬이 부드럽고 순해서 부모님께 잘 맞아요. 바다 보이는 홀과 룸이 있어요. 최근 후기가 2021년이라 가기 전에 영업 여부를 확인하세요.', badge:'영업 확인' },
+  { id:'wwss', ko:'우웨이수스 (채식 코스)', zh:'无味舒食(环岛路店)', tags:['near','local'], price:'1인 ¥180쯤', link:'https://guide.michelin.com/sg/zh_CN/fujian-province/xiamen_1031934/restaurant/wuwei-natural-food', linkLabel:'미쉐린 가이드',
+    where:'环岛南路290号 (해변 단독 빌라)', area:'숙소에서 택시 10분쯤',
+    sig:'여섯 가지 버섯탕, 수제 채식 딤섬, 계절 코스',
+    rn:'조용하고 바다 보이는 룸이 있어요. 음식이 아주 순해요. 전부 채식이라 취향을 타요. 예약을 추천해요.', badge:'미쉐린' },
+  { id:'chic', ko:'CHIC1699 원양 프라이빗 키친', zh:'CHIC1699远洋私厨', tags:['near','local'], price:'1인 ¥230쯤', link:'https://guide.michelin.com/sg/zh_CN/fujian-province/xiamen_1031934/restaurant/chic-1699-1213633', linkLabel:'미쉐린 가이드',
+    where:'环岛东路1705号 JFC品尚中心 C관 3층 (컨벤션센터 근처)', area:'숙소에서 택시 10분쯤',
+    sig:'불도장, 알배기 게 솥밥, 수제 어묵탕, 사차 새우(살짝 매움)',
+    rn:'쇼핑몰 안이라 엘리베이터가 있고 걷는 거리가 짧아요. 미쉐린 추천 식당이라 예약을 추천해요. 전화 +86 592 533 1699. 영업 11:00~14:00, 17:00~21:00.', badge:'미쉐린' },
+);
+/* 민난대원은 숙소 근처가 아니라 관음산 쪽이라 설명을 바로잡음 */
+Object.assign(REST.find(r => r.id==='mnd'), { zh:'闽南大院', where:'环岛东路2188号-16 (관음산 해변)', area:'숙소에서 택시 15분쯤',
+  sig:'굴전, 전복 장무야, 생강 전갱이 구이, 해산물 족발. 1인 ¥160~200',
+  rn:'넓은 정원식 식당이고 바다 보이는 룸이 있어요. 최근 정보가 2023년이라 가기 전에 영업 여부를 확인하세요. 저녁(17:00~)만 할 수 있어요.', badge:'영업 확인' });
+Object.assign(REST.find(r => r.id==='ljy'), { tags:['near','local'], where:'环岛南路308号 (쩡춰안 입구 맞은편 바닷가)', area:'숙소에서 택시 10분쯤',
+  sig:'데친 문어, 토종돼지 맑은 탕, 굴전, 장무야, 땅콩탕+토란빵. 영업 11:00~21:30',
+  rn:'크고 깔끔하고 순한 가정식이에요. 바다 보이는 자리는 일찍 차서 예약하거나 일찍 가세요.' });
+const RFILTERS = [['all','전체'],['near','숙소 근처'],['d1','1일차 저녁'],['hot','훠궈·샤브'],['local','샤먼 향토'],['gly','구랑위']];
 
 const DICT = [
   { h:'샤먼 향토', items:[
@@ -417,6 +483,14 @@ const DICT = [
   { h:'훠궈 · 샤브', items:[
     ['hotpot','차오산 소고기 훠궈','潮汕牛肉火锅'],['tongue','소혀','牛舌'],['bball','소고기 완자','牛肉丸'],
     ['ssauce','사차 소스','沙茶酱'],['radish','무','白萝卜'],
+  ]},
+  { h:'숙소 근처 식당 메뉴', items:[
+    ['hxz','해산물 뚝배기죽','砂锅海鲜粥'],['crab','돼지고기 완자 꽃게찜','土猪肉饼蒸梭子蟹'],['cmx','볶은 면선 (가는 국수)','炒面线'],
+    ['rwt','고기완자탕','肉丸汤'],['gll','탕수육','咕咾肉'],['yny','토란 오리','香酥芋泥鸭'],['lbxf','무 짭짤밥','萝卜咸饭'],
+    ['zchl','김·굴 뚝배기','紫菜海蛎煲'],['hgdf','바지락 두부탕','花蛤豆腐汤'],['mxh','면선죽','面线糊'],
+    ['scyp','사차 전골','沙茶一品锅'],['hxg','해산물 전골','海鲜锅'],['mjg','삼치 걸쭉탕','马鲛鱼羹'],
+    ['wgdf','백합조개 두부탕','文蛤豆腐汤'],['hgj','새우 하가우 (딤섬)','虾饺皇'],['yzgl','망고 디저트','杨枝甘露'],
+    ['lzt','여섯 가지 버섯탕','六珍汤'],['gxfan','알배기 게 솥밥','膏蟹焖饭'],
   ]},
   { h:'해산물 · 일반', items:[
     ['scallop','마늘 당면 가리비찜','蒜蓉粉丝蒸扇贝'],['fish','생선찜 (우럭 등)','清蒸鱼'],['meicai','매이차이 삼겹찜','梅菜扣肉'],
