@@ -1,0 +1,866 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>샤먼 가족여행 11월</title>
+<style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Do+Hyeon&family=Noto+Sans+KR:wght@400;500;700&family=Noto+Sans+SC:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+/* Layout: 한 손으로 넘겨 보는 7개 탭(1~4일, 지도, 맛집, 준비). 지도 탭은 실제 지도(Amap 타일) + 현재 위치 + 가까운 순 리스트, 맛집은 메뉴 사전에서 골라 중국어 주문서를 만드는 구조. */
+:root{
+  --bg:#F2F6F7; --surface:#FFFFFF; --ink:#13262B; --muted:#5B6F75; --line:#D5E0E3;
+  --accent:#0B6E7B; --accent-ink:#FFFFFF; --soft:#E3F0F2; --warn:#B4402B; --warn-bg:#FBE9E5;
+  --d1:#0B6E7B; --d2:#B5651D; --d3:#5B4BB7; --d4:#5B6F75;
+  --f-display:'Do Hyeon','Noto Sans KR',sans-serif;
+  --f-body:'Noto Sans KR',system-ui,-apple-system,'Apple SD Gothic Neo',sans-serif;
+  --f-han:'Noto Sans SC','PingFang SC','Microsoft YaHei',sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0E181B; --surface:#16252A; --ink:#E6EFF1; --muted:#93A8AE; --line:#27393F;
+    --accent:#5CC0CD; --accent-ink:#0E181B; --soft:#1A2E34; --warn:#F08A74; --warn-bg:#3A1F19;
+    --d1:#5CC0CD; --d2:#E0A25A; --d3:#A79BF0; --d4:#93A8AE;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0E181B; --surface:#16252A; --ink:#E6EFF1; --muted:#93A8AE; --line:#27393F;
+  --accent:#5CC0CD; --accent-ink:#0E181B; --soft:#1A2E34; --warn:#F08A74; --warn-bg:#3A1F19;
+  --d1:#5CC0CD; --d2:#E0A25A; --d3:#A79BF0; --d4:#93A8AE;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{
+  background:var(--bg); color:var(--ink); font-family:var(--f-body); font-size:15px; line-height:1.6;
+  padding-block:0 96px;
+  padding-left:max(16px, env(safe-area-inset-left, 0px));
+  padding-right:max(16px, env(safe-area-inset-right, 0px));
+}
+body::before{content:""; position:fixed; inset:0 0 auto; height:env(safe-area-inset-top, 0px); z-index:10; background:var(--bg)}
+.wrap{max-width:640px; margin:0 auto}
+a{color:var(--accent)}
+
+header{padding-block:22px 14px}
+.eyebrow{font-size:12px; letter-spacing:.08em; color:var(--muted); margin:0 0 4px}
+h1{font-family:var(--f-display); font-weight:400; font-size:34px; line-height:1.15; margin:0 0 4px; text-wrap:balance}
+.sub{color:var(--muted); margin:0}
+.flights{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:16px}
+.flight{background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:10px 12px; min-width:0}
+.flight b{font-family:var(--f-display); font-weight:400; font-size:17px; color:var(--accent)}
+.flight div{font-size:13px}
+.flight .t{font-size:16px; font-weight:700; font-variant-numeric:tabular-nums}
+.tz{margin:10px 0 0; font-size:13px; color:var(--muted)}
+.pnr{font-variant-numeric:tabular-nums; letter-spacing:.04em}
+
+nav{
+  position:sticky; top:env(safe-area-inset-top, 0px); z-index:5; background:var(--bg);
+  display:grid; grid-template-columns:repeat(7,1fr); gap:3px; padding-block:8px;
+  border-bottom:1px solid var(--line);
+}
+nav button{
+  font:inherit; color:var(--muted); background:transparent; border:0; border-radius:8px; padding:6px 0 5px; cursor:pointer;
+  display:flex; flex-direction:column; align-items:center; line-height:1.25; min-width:0;
+}
+nav button b{font-size:14px; font-weight:700}
+nav button small{font-size:10px; font-variant-numeric:tabular-nums}
+nav button[aria-selected="true"]{background:var(--accent); color:var(--accent-ink)}
+button:focus-visible, a:focus-visible, label:focus-within{outline:2px solid var(--accent); outline-offset:2px}
+
+section.view{padding-top:18px}
+h2{font-family:var(--f-display); font-weight:400; font-size:26px; margin:0 0 2px; text-wrap:balance}
+.lead{color:var(--muted); margin:0 0 16px}
+h3{font-size:13px; letter-spacing:.06em; color:var(--muted); margin:26px 0 8px; font-weight:700}
+.han{font-family:var(--f-han)}
+
+.timeline{list-style:none; margin:0; padding:0}
+.timeline li{display:grid; grid-template-columns:56px 1fr; gap:12px; padding-block:12px; border-top:1px solid var(--line)}
+.timeline li:first-child{border-top:0}
+.time{font-variant-numeric:tabular-nums; font-weight:700; color:var(--accent); font-size:14px; padding-top:1px}
+.ev{min-width:0}
+.ev strong{display:block; font-weight:700}
+.ev span.note{display:block; color:var(--muted); font-size:14px}
+.tag{display:inline-block; font-size:11px; font-weight:700; padding:1px 7px; border-radius:999px; margin-left:6px; vertical-align:1px}
+.tag.opt{background:var(--soft); color:var(--accent)}
+.tag.book{background:var(--warn-bg); color:var(--warn)}
+
+.box{background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:12px 14px}
+.box + .box{margin-top:10px}
+.box.alert{border-color:var(--warn); background:var(--warn-bg)}
+.box h4{margin:0 0 4px; font-size:14px}
+.box p{margin:0; font-size:14px}
+.box ul{margin:4px 0 0; padding-left:18px; font-size:14px}
+.gap{margin-top:16px}
+
+.book-list{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:10px}
+.book-list li{display:grid; grid-template-columns:1fr auto; gap:10px; align-items:start; background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:10px 12px}
+.book-list .when{font-size:12px; font-weight:700; color:var(--warn); background:var(--warn-bg); border-radius:999px; padding:2px 9px; white-space:nowrap}
+.book-list b{display:block}
+.book-list span.d{font-size:13px; color:var(--muted)}
+
+/* 칩 (필터, 메뉴 선택) */
+.chips{display:flex; flex-wrap:wrap; gap:6px}
+.chip{
+  font:inherit; font-size:13px; color:var(--ink); background:var(--surface); border:1px solid var(--line);
+  border-radius:999px; padding:5px 12px; cursor:pointer; display:inline-flex; align-items:center; gap:6px; min-width:0;
+}
+.chip[aria-pressed="true"]{background:var(--accent); border-color:var(--accent); color:var(--accent-ink)}
+.chip .dot{width:9px; height:9px; border-radius:50%; background:currentColor; flex:none}
+.chip.dish{align-items:flex-start; flex-direction:column; gap:0; border-radius:12px; padding:6px 12px; text-align:left}
+.chip.dish .z{font-family:var(--f-han); font-size:17px; line-height:1.3}
+.chip.dish .k{font-size:12px; opacity:.85}
+.dwrap{display:flex; flex-direction:column; align-items:flex-start; gap:4px; min-width:0}
+
+/* 지도 */
+.mapbox{background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:6px; margin-top:12px}
+/* 지도 탭 */
+.mtools{display:flex; flex-wrap:wrap; gap:8px; align-items:center; justify-content:space-between; margin-top:12px}
+.seg{display:inline-flex; background:var(--soft); border-radius:10px; padding:3px; gap:2px}
+.seg button{font:inherit; font-size:14px; font-weight:700; color:var(--accent); background:transparent; border:0; border-radius:8px; padding:6px 14px; cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--accent); color:var(--accent-ink)}
+.locbtn{font:inherit; font-size:13px; font-weight:700; color:var(--accent); background:var(--surface); border:1px solid var(--accent); border-radius:10px; padding:6px 12px; cursor:pointer}
+.locbtn[data-on="1"]{background:var(--accent); color:var(--accent-ink)}
+.chips.gapt{margin-top:10px}
+#lmap{height:62vh; min-height:320px; border-radius:12px; border:1px solid var(--line); margin-top:12px; background:var(--soft); z-index:0}
+.mstatus{font-size:12px; color:var(--muted); margin:8px 2px 0}
+.mstatus.warn{color:var(--warn)}
+.pin{width:26px; height:26px; border-radius:50% 50% 50% 0; transform:rotate(-45deg); border:2px solid #fff; box-shadow:0 1px 4px rgba(0,0,0,.35); display:grid; place-items:center}
+.pin span{transform:rotate(45deg); font-size:12px; font-weight:700; color:#fff; font-family:var(--f-body)}
+.pin.place{background:var(--d1)} .pin.rest{background:var(--warn)} .pin.home{background:var(--d3)}
+.pin.approx{opacity:.75; border-style:dashed}
+.me{width:16px; height:16px; border-radius:50%; background:#1A73E8; border:3px solid #fff; box-shadow:0 0 0 2px rgba(26,115,232,.35)}
+.leaflet-popup-content-wrapper,.leaflet-popup-tip{background:var(--surface); color:var(--ink)}
+.leaflet-popup-content{margin:12px 14px; font-family:var(--f-body); font-size:14px; line-height:1.5; min-width:220px}
+.leaflet-container a.lnk{color:var(--accent)}
+.pc h4, .nlist h4{margin:0; font-size:16px; line-height:1.35}
+.pc .top, .nlist .top{display:flex; justify-content:space-between; gap:10px; align-items:baseline}
+.pc .zh, .nlist .zh{font-family:var(--f-han); color:var(--muted); font-size:14px}
+.pc .meta, .nlist .meta{font-size:13px; color:var(--muted); margin:4px 0 0}
+.pc .chips, .nlist .chips{margin-top:8px}
+.pc .acts{justify-content:flex-start; margin-top:10px}
+.dist{font-size:12px; font-weight:700; color:var(--accent); white-space:nowrap; font-variant-numeric:tabular-nums}
+.approxnote{font-size:11px; color:var(--warn); font-weight:700}
+.nlist{list-style:none; margin:12px 0 0; padding:0; display:flex; flex-direction:column; gap:10px}
+.nlist li{background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:12px 14px}
+.nlist .top{display:flex; justify-content:space-between; gap:10px; align-items:baseline}
+.nlist .kind{display:inline-block; font-size:11px; font-weight:700; border-radius:999px; padding:1px 7px; margin-right:4px; vertical-align:1px}
+.kind.rest{background:var(--warn-bg); color:var(--warn)} .kind.place{background:var(--soft); color:var(--accent)}
+.nlist .acts{justify-content:flex-start; margin-top:8px}
+.basepick{display:flex; flex-wrap:wrap; gap:6px; align-items:center; font-size:13px; color:var(--muted); margin-top:10px}
+.mapnote{font-size:12px; color:var(--muted); margin:8px 2px 0}
+
+.plist{list-style:none; margin:0; padding:0}
+.plist li{display:grid; grid-template-columns:1fr auto; gap:10px; align-items:center; padding-block:10px; border-top:1px solid var(--line)}
+.plist li:first-child{border-top:0}
+.plist .ko{font-size:13px; color:var(--muted)}
+.plist .zh{font-family:var(--f-han); font-size:18px; line-height:1.35; word-break:break-all}
+.plist .zh.small{font-size:15px}
+.acts{display:flex; gap:6px; align-items:center; flex-wrap:wrap; justify-content:flex-end}
+.copy, .lnk{
+  font:inherit; font-size:12px; font-weight:700; color:var(--accent); background:var(--soft);
+  border:0; border-radius:8px; padding:6px 10px; cursor:pointer; white-space:nowrap; text-decoration:none; display:inline-block;
+}
+
+/* 맛집 */
+.rest{background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:12px 14px; margin-top:10px}
+.rest .top{display:flex; justify-content:space-between; gap:10px; align-items:baseline}
+.rest h4{margin:0; font-size:16px}
+.rest .price{font-size:13px; font-weight:700; color:var(--accent); white-space:nowrap}
+.rest .zh{font-family:var(--f-han); font-size:15px; color:var(--muted)}
+.rest .meta{font-size:13px; color:var(--muted); margin:4px 0 0}
+.rest .sig{font-size:14px; margin:6px 0 0}
+.rest .rn{font-size:13px; margin:6px 0 0}
+.rest .acts{justify-content:flex-start; margin-top:10px}
+.badge{display:inline-block; font-size:11px; font-weight:700; padding:1px 7px; border-radius:999px; background:var(--soft); color:var(--accent); margin-right:4px}
+.badge.hot{background:var(--warn-bg); color:var(--warn)}
+
+#orderbar{
+  position:fixed; left:0; right:0; bottom:0; z-index:8; background:var(--accent); color:var(--accent-ink);
+  padding-top:10px; padding-bottom:calc(10px + env(safe-area-inset-bottom, 0px));
+  padding-left:max(16px, env(safe-area-inset-left, 0px)); padding-right:max(16px, env(safe-area-inset-right, 0px));
+}
+#orderbar button{
+  font:inherit; font-weight:700; width:100%; max-width:640px; margin:0 auto; display:flex; justify-content:space-between;
+  background:transparent; border:0; color:inherit; cursor:pointer; padding:2px 0;
+}
+#sheet{
+  position:fixed; inset:0; z-index:20; background:var(--bg); overflow-y:auto;
+  padding-top:calc(env(safe-area-inset-top, 0px) + 14px); padding-bottom:calc(32px + env(safe-area-inset-bottom, 0px));
+  padding-left:max(16px, env(safe-area-inset-left, 0px)); padding-right:max(16px, env(safe-area-inset-right, 0px));
+}
+#sheet .in{max-width:640px; margin:0 auto}
+.sheethead{display:flex; justify-content:space-between; align-items:center; gap:10px}
+.sheethead h2{margin:0}
+.bigbtn{font:inherit; font-weight:700; border:0; border-radius:10px; padding:9px 14px; cursor:pointer; background:var(--accent); color:var(--accent-ink)}
+.bigbtn.ghost{background:var(--soft); color:var(--accent)}
+.hello{font-family:var(--f-han); font-size:22px; margin:16px 0 4px}
+.oline{display:grid; grid-template-columns:1fr auto; gap:10px; align-items:center; padding-block:12px; border-top:1px solid var(--line)}
+.oline .z{font-family:var(--f-han); font-size:28px; line-height:1.25}
+.oline .k{font-size:13px; color:var(--muted)}
+.qty{display:flex; align-items:center; gap:8px; font-variant-numeric:tabular-nums}
+.qty button{font:inherit; width:34px; height:34px; border-radius:50%; border:1px solid var(--line); background:var(--surface); color:var(--ink); font-size:18px; cursor:pointer}
+.qty span{min-width:20px; text-align:center; font-weight:700}
+.mline{font-family:var(--f-han); font-size:24px; padding-block:6px}
+.empty{color:var(--muted); padding-block:20px}
+
+.checks{list-style:none; margin:0; padding:0}
+.checks label{display:grid; grid-template-columns:22px 1fr; gap:10px; align-items:start; padding-block:7px; cursor:pointer}
+.checks input{width:18px; height:18px; margin:3px 0 0; accent-color:var(--accent)}
+.checks input:checked + span{color:var(--muted); text-decoration:line-through}
+
+.tablewrap{overflow-x:auto; border:1px solid var(--line); border-radius:10px; background:var(--surface)}
+table{border-collapse:collapse; width:100%; font-size:14px}
+th,td{text-align:left; padding:8px 12px; border-top:1px solid var(--line); font-variant-numeric:tabular-nums; white-space:nowrap}
+th{font-size:12px; color:var(--muted); border-top:0; font-weight:700}
+td.r, th.r{text-align:right}
+td.m{white-space:normal; color:var(--muted)}
+
+footer{margin-top:32px; font-size:12px; color:var(--muted)}
+@media (prefers-reduced-motion: no-preference){ nav button{transition:background .15s} }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <p class="eyebrow">2026.11.14 – 11.17 · 4인 · 샤먼(厦门)</p>
+    <h1>샤먼 가족여행</h1>
+    <p class="sub">부모님과 함께, 걷기는 적게 볼거리는 알차게</p>
+    <div class="flights">
+      <div class="flight"><b>KE125</b><div>11/14 (토) 인천 → 샤먼</div><div class="t">10:05 → 12:30</div></div>
+      <div class="flight"><b>KE126</b><div>11/17 (화) 샤먼 → 인천</div><div class="t">13:40 → 17:50</div></div>
+    </div>
+    <p class="tz">시간은 모두 <b>현지(중국) 시간</b>. 한국보다 1시간 느려요.</p>
+  </header>
+
+  <nav id="tabs" role="tablist" aria-label="여행 메뉴"></nav>
+  <div id="views"></div>
+
+  <footer>숙소 Haixi Yue homestay · 황춰로 568호 · 입장료, 시간, 영업 여부는 조사 시점 기준이라 현장에서 확인하세요.</footer>
+</div>
+
+<div id="orderbar" hidden><button type="button" id="openSheet"><span id="ocount"></span><span>주문서 보기 ›</span></button></div>
+
+<div id="sheet" hidden role="dialog" aria-modal="true" aria-label="주문서">
+  <div class="in">
+    <div class="sheethead"><h2>주문서</h2><button type="button" class="bigbtn ghost" id="closeSheet">닫기</button></div>
+    <p class="lead">직원에게 이 화면을 보여주세요.</p>
+    <div id="sheetBody"></div>
+  </div>
+</div>
+
+<script>
+/* ---------- 데이터 ---------- */
+const DAYS = [
+  { id:'day1', n:'1일', date:'11/14 토', title:'도착, 중산루 저녁', lead:'첫날은 식사가 중요해요. 이동은 중산루 한 곳으로 줄였어요.',
+    rows:[
+      ['12:30','샤먼 가오치 공항 도착','KE125'],
+      ['12:30','입국심사, 수하물','왕복 항공권과 숙소 예약 확인서 준비. 약 1시간 반 여유'],
+      ['14:00','택시/디디로 숙소 이동','대략 25~40분. 중국어 주소는 지도 탭에서 복사'],
+      ['15:00','숙소 체크인, 휴식','일찍 도착하면 짐부터 맡기기. 체크인 시간은 호스트에 확인'],
+      ['16:30','중산루로 출발','택시 대략 30~40분. 피곤해 보이면 중산루를 3일차 저녁으로 미루기'],
+      ['17:15','중산루 보행자거리 (中山路)','치러우(아케이드) 건축을 보며 가볍게 산책. 평지'],
+      ['18:00','저녁','맛집 탭에서 고르기. 토요일 저녁 6~8시는 대기 30분쯤이라, 길면 식사 후에 산책'],
+      ['19:30','땅콩탕, 위완 같은 간식','중산루 안'],
+      ['20:00','택시로 숙소 복귀','대략 30~40분'],
+    ],
+    after:{h:'도착 전에', items:['알리페이 또는 위챗페이, 지도앱(Amap), 디디 설치','숙소 근처 편의점, 마트 위치 확인']}
+  },
+  { id:'day2', n:'2일', date:'11/15 일', title:'남정 토루', lead:'하루 종일 토루. 차량을 대절해서 편하게 다녀와요.',
+    rows:[
+      ['07:30','아침','숙소 주변'],
+      ['08:00','투어 차량이 숙소로 픽업','클룩 투어는 보통 9시 출발이고 협의 가능. 8시 출발을 요청','book'],
+      ['11:00','윈수이야오 고진 (云水谣古镇)','이동 약 3시간 기준(추정). 옛 거리와 강가 산책 1~1.5시간'],
+      ['12:30','점심','현지 식당. 투어에 포함되는지 문의'],
+      ['13:30','허컹 토루군 (河坑土楼群)','입구에서 약 15분 걷기. 토루 안을 구경하고 차 한 잔'],
+      ['15:00','샤먼으로 출발','편도 2.5~3시간'],
+      ['18:00','숙소 도착 (추정)','저녁은 숙소 근처에서 가볍게'],
+    ],
+    box:{cls:'alert', h:'토루 투어 문의할 것', lines:['클룩 "샤먼 출발 윈수이야오·허컹 프라이빗 투어". 시내 호텔 픽업 무료, 약 8시간, 17시쯤 종료','가격, 숙소(황춰) 픽업 추가 요금 여부, 점심 포함 여부, 초과 시간 요금','11/15가 일요일이라 차량이 있는지 먼저 확인','티엔뤄컹(田螺坑)은 전망대 오르막이 있어 선택']},
+    after:{h:'플랜 B (비 오거나 컨디션이 안 좋을 때)', items:['숙소 주변 환다오루 해안 산책','쩡춰안(曾厝垵) 먹자골목']}
+  },
+  { id:'day3', n:'3일', date:'11/16 월', title:'구랑위', lead:'이번 여행의 하이라이트. 월요일이라 주말보다 한산해요. 전부 도보라 천천히.',
+    rows:[
+      ['08:00','아침',''],
+      ['08:30','택시/디디로 페리 터미널 이동','대략 30~40분. 터미널 위치는 예약 시 앱에서 확인'],
+      ['09:30','페리 탑승','8~12분, 왕복 ¥35. 여권 지참','book'],
+      ['10:15','숙장화원 (菽庄花园)','바다 위 44교, 해안 평지 산책. 1~1.5시간'],
+      ['11:45','피아노 박물관 (钢琴博物馆)','약 90분. 학생 공연 시간표가 입구에 게시'],
+      ['13:00','점심','용터우루(龙头路)는 해산물이 비싸고 편차가 커요. 북쪽 주택가 골목 식당 추천'],
+      ['14:15','카페, 디저트 휴식','옛 빌라 개조 카페. 하우신림의 달콤한 탕도 후보'],
+      ['15:00','일광암 (日光岩)','돌계단 15~20분 오르막, ¥60. 힘들면 건너뛰기','opt'],
+      ['16:30','페리 복귀','대부분 명소는 17:00 폐장'],
+      ['18:00','저녁 (마지막 밤)','훠궈 계열이나 푸젠 요리. 맛집 탭에서 고르기'],
+      ['20:00','숙소 복귀',''],
+    ],
+    box:{cls:'', h:'난푸퉈사를 넣고 싶다면', lines:['숙소 출발을 07:45로 당겨 난푸퉈사(南普陀寺)를 1시간쯤 보고 페리 터미널로 가요','구랑위 하루가 빡빡해지니 부모님 컨디션을 보고 결정','예약 필요 여부는 출발 전에 확인']},
+    after:{h:'구랑위 팁', items:['섬에 차량이 없어요. 골목은 좁고 언덕, 남쪽 해안길은 평지','페리는 샤구 페리 앱, 위챗 미니프로그램, 현장, 클룩 등에서 예약','도착 부두는 보통 싼치우톈(三丘田). 돌아오는 부두는 예약 시 확인']}
+  },
+  { id:'day4', n:'4일', date:'11/17 화', title:'귀국', lead:'비행기 13:40. 공항에는 11:00까지 도착하는 걸 목표로.',
+    rows:[
+      ['07:30','기상, 짐 정리','전날 밤에 정리 끝내두기'],
+      ['08:00','아침','숙소 주변'],
+      ['08:45','해안 마지막 산책','짧게','opt'],
+      ['09:30','체크아웃','호스트에 퇴실 방법 확인 (키 반납 등)'],
+      ['09:45','디디/택시로 공항 출발','대략 25~40분. 호출은 출발 15분 전에 미리'],
+      ['10:30','가오치 공항 도착','11:00 이전 도착'],
+      ['11:00','체크인, 출국심사, 면세','철관음 차 등 선물. 남은 위안화는 공항에서 소진'],
+      ['13:40','샤먼 출발 (KE126)',''],
+      ['17:50','인천 도착','한국 시간. 중국보다 1시간 빠름'],
+    ]
+  }
+];
+
+/* 좌표는 WGS84(GPS 기준). approx:1 은 주소만 알고 정확한 위치는 모르는 곳 */
+const PLACES = [
+  { id:'home', ko:'숙소 (Haixi Yue homestay)', zh:'福建省厦门市思明区黄厝路568号', days:[1,2,3,4], small:1, lat:24.4470, lng:118.1550, approx:1 },
+  { id:'apt', ko:'공항', zh:'厦门高崎国际机场', days:[1,4], lat:24.5438, lng:118.1327 },
+  { id:'zs', ko:'중산루 보행자거리', zh:'中山路步行街', days:[1], lat:24.4568, lng:118.0775 },
+  { id:'ysy', ko:'윈수이야오 고진', zh:'云水谣古镇', days:[2], lat:24.6681, lng:117.0897 },
+  { id:'hk', ko:'허컹 토루군', zh:'河坑土楼群', days:[2], lat:24.6510, lng:117.0532 },
+  { id:'tlk', ko:'티엔뤄컹 토루군 (선택)', zh:'田螺坑土楼群', days:[2], lat:24.5869, lng:117.0558 },
+  { id:'npt', ko:'난푸퉈사 (선택)', zh:'南普陀寺', days:[3], lat:24.4433, lng:118.0915 },
+  { id:'ferry', ko:'페리 터미널 (샤구 부두)', zh:'厦鼓码头', days:[3], lat:24.4829, lng:118.0698 },
+  { id:'gly', ko:'구랑위', zh:'鼓浪屿', days:[3], lat:24.4472, lng:118.0619, nopin:1 },
+  { id:'sqt', ko:'싼치우톈 부두', zh:'三丘田码头', days:[3], lat:24.4528, lng:118.0647 },
+  { id:'szh', ko:'숙장화원', zh:'菽庄花园', days:[3], lat:24.4417, lng:118.0645 },
+  { id:'piano', ko:'피아노 박물관', zh:'钢琴博物馆', days:[3], lat:24.4415, lng:118.0648, nopin:1 },
+  { id:'rgy', ko:'일광암', zh:'日光岩', days:[3], lat:24.4446, lng:118.0622 },
+  { id:'ltl', ko:'용터우루', zh:'龙头路', days:[3], lat:24.4473, lng:118.0672 },
+  { id:'zca', ko:'쩡춰안 먹자골목 (플랜 B)', zh:'曾厝垵', days:[2], lat:24.4286, lng:118.1180 },
+];
+
+/* 식당 위치와 대표 메뉴(메뉴 사전 id). days는 어느 날 식사에 어울리는지 */
+const RGEO = {
+  qcj:{lat:24.4573, lng:118.0739, days:[1], dishes:['gmy','zcr','tofu']},
+  mnd:{lat:24.4530, lng:118.1660, days:[1,3], dishes:['tsd','oyster'], approx:1},
+  bhl:{lat:24.4750, lng:118.1064, days:[1,3], dishes:['hotpot','bball','ssauce'], where:'MIXC(万象城) 지점 기준'},
+  rs:{lat:24.4870, lng:118.1185, days:[1,3], dishes:['hotpot','tongue','bball','radish'], approx:1},
+  sxl:{lat:24.5050, lng:118.1400, days:[3], dishes:['oyster','gmy'], approx:1},
+  ljy:{lat:24.4330, lng:118.1080, days:[3], dishes:['oyster','zcr','fotiao'], approx:1},
+  yy:{lat:24.4790, lng:118.1140, days:[3], dishes:[], approx:1},
+  hsl:{lat:24.4475, lng:118.0675, days:[3], dishes:[]},
+  snk:{lat:24.4560, lng:118.0711, days:[1], dishes:['peanut','yuwan']},
+};
+
+const PHRASES = [
+  ['여기로 가 주세요','请到这里'],
+  ['이거 주세요','我要这个'],
+  ['계산해 주세요','买单'],
+  ['화장실이 어디예요','洗手间在哪里'],
+];
+
+const REST = [
+  { id:'qcj', ko:'칭차이자', zh:'清菜家·老厦门菜馆(南中广场店)', tags:['d1','local'], price:'1인 ¥60쯤', link:'https://sa.trip.com/restaurant/xiamen-21-detail/qingcai-restaurant-15246968.html', linkLabel:'Trip.com 후기',
+    where:'난중광장(南中广场) 2층, 쓰밍시루 51-53호', area:'중산루 보행자거리 인근',
+    sig:'장무야(姜母鸭), 새콤달콤 돼지 튀김(炸醋肉), 두부 요리, 계수나무 토란. Trip.com 평점 4.0 (리뷰 37개)',
+    rn:'1일차 동선과 같아서 가장 편해요. Trip.com에는 11:00~14:00, 17:00~21:00 영업으로 표시돼 있어요.', badge:'1일차 추천' },
+  { id:'mnd', ko:'민난대원 (Minnan Dayuan)', zh:'', tags:['d1','local'], price:'',
+    where:'환다오동루 2188-16호', area:'숙소와 같은 해안도로 계열(추정)',
+    sig:'해물 젤리, 굴전, 랍스터. 해산물 중심 프라이빗 키친',
+    rn:'숙소에서 가까울 가능성이 높지만 지도에서 거리를 확인하세요. 예약이 필요할 수 있어요.', badge:'숙소 근처?' },
+  { id:'bhl', ko:'팔합리 해기 소고기 훠궈', zh:'八合里海记', tags:['hot','d1'], price:'1인 ¥100쯤',
+    where:'자허로 96호 등 여러 지점 (MIXC 5층 등)', area:'섬 중앙부',
+    sig:'차오산식 소고기 샤브. 신선한 소고기',
+    rn:'골라서 담가 먹는 계열이라 부모님 취향에 가까워요. 맑은 국물에 사차 소스를 찍어 먹어요.', badge:'훠궈', hot:1 },
+  { id:'rs', ko:'루산 차오산 소고기 훠궈 (자허점)', zh:'', tags:['hot','d1'], price:'',
+    where:'자허 지점 (정확한 주소 확인 필요)', area:'섬 중앙부',
+    sig:'소혀, 소고기완자, 사차 소스, 무. 소고기 국물 리필',
+    rn:'Trip.com 평점 4.5 (리뷰 582개). 조용하고 직원이 친절하다는 후기가 많아요.', badge:'훠궈', hot:1 },
+  { id:'sxl', ko:'쓰샤리 (Si Xia Li)', zh:'', tags:['local'], price:'',
+    where:'후리구 진볜로 566호 항공고지석광장 B3동 2층 (다른 지점: 판지롄화 3층 301호)', area:'후리구 지점은 시내 북쪽',
+    sig:'굴전, 표고버섯 삼겹살 조림, 전복 장무야(다른 소개 글 기준)',
+    rn:'미쉐린 가이드 2026 빕 구르망. 가족 동반 가능으로 표시돼 있어요. 예약은 식당에 직접 (+86 592 293 2600, 후리 지점).', badge:'빕 구르망', link:'https://guide.michelin.com/en/fujian-province/xiamen_1031934/restaurant/si-xia-li-huli', linkLabel:'미쉐린 가이드' },
+  { id:'ljy', ko:'린지아 민난 요리', zh:'临家闽南菜', tags:['local'], price:'1인 ¥130쯤',
+    where:'환다오난루 308호', area:'남쪽 해안 (샤먼대 쪽)',
+    sig:'무밥, 굴전, 식초 돼지튀김, 불도장',
+    rn:'바다가 보이는 룸, 홀, 테라스가 있어요. 숙소와는 반대편 해안이에요.' },
+  { id:'yy', ko:'옌위', zh:'宴遇', tags:['local'], price:'1인 ¥130쯤',
+    where:'자허로 21호 (신징점 2층)', area:'섬 중앙부',
+    sig:'푸젠, 쓰촨, 광둥 퓨전. 미쉐린 1스타로 소개',
+    rn:'조금 격식 있는 저녁 후보예요. 예약을 추천해요.', badge:'미쉐린' },
+  { id:'hsl', ko:'하우신림 (Hau Sinn-Lim)', zh:'', tags:['gly'], price:'',
+    where:'구랑위 용터우루 105호', area:'구랑위',
+    sig:'계절 달콤한 탕, 민난식 떡',
+    rn:'3일차 구랑위에서 쉬어가며 먹기 좋아요.' },
+  { id:'snk', ko:'황쩌허 땅콩탕', zh:'黄则和花生汤', tags:['d1','local'], price:'',
+    where:'중산루 일대', area:'중산루',
+    sig:'푹 끓인 달콤하고 고소한 땅콩 국물',
+    rn:'식후나 아침에 좋아요. 위완(생선 완자)은 중산로 75호 쪽에서 파는 곳이 있어요.' },
+];
+const RFILTERS = [['all','전체'],['d1','1일차 저녁'],['hot','훠궈·샤브'],['local','샤먼 향토'],['gly','구랑위']];
+
+const DICT = [
+  { h:'샤먼 향토', items:[
+    ['sacha','사차면','沙茶面'],['zcr','새콤달콤 돼지 튀김','炸醋肉'],['oyster','굴전','海蛎煎','蚵仔煎'],['gmy','장무야 (생강 오리탕)','姜母鸭'],
+    ['tsd','투순둥 (해물 젤리, 호불호)','土笋冻'],['yuwan','위완 (생선 완자)','鱼丸'],['peanut','땅콩탕','花生汤'],
+    ['sxc','샤오셴차오 (젤리 디저트)','烧仙草'],['zong','소육종 (찹쌀 삼겹 찜)','烧肉粽'],['wxt','오향조 (튀김)','五香条'],
+    ['yubao','위바오 (토란 만두)','芋包'],['runbing','룬빙 (채소 말이)','润饼'],['fotiao','불도장','佛跳墙'],
+  ]},
+  { h:'훠궈 · 샤브', items:[
+    ['hotpot','차오산 소고기 훠궈','潮汕牛肉火锅'],['tongue','소혀','牛舌'],['bball','소고기 완자','牛肉丸'],
+    ['ssauce','사차 소스','沙茶酱'],['radish','무','白萝卜'],
+  ]},
+  { h:'해산물 · 일반', items:[
+    ['scallop','마늘 당면 가리비찜','蒜蓉粉丝蒸扇贝'],['fish','생선찜 (우럭 등)','清蒸鱼'],['meicai','매이차이 삼겹찜','梅菜扣肉'],
+    ['tofu','철판 두부','铁板豆腐'],['egg','계란볶음밥','蛋炒饭'],['greens','청경채볶음','清炒青菜'],['rice','밥','米饭'],
+  ]},
+];
+const MODS = [
+  ['nocil','고수 빼주세요','不要香菜'],['nospicy','맵지 않게','不要辣'],['light','담백하게','清淡一点'],
+  ['hotw','뜨거운 물 주세요','请给热水'],['noice','얼음 빼고','不要冰'],
+];
+const DISH = {}; DICT.forEach(g => g.items.forEach(i => DISH[i[0]] = {ko:i[1], zh:i[2], alt:i[3]}));
+
+const BOOKINGS = [
+  ['토루 프라이빗 투어 (11/15)','일요일 차량, 가격, 숙소 픽업, 점심 포함 문의','지금 바로'],
+  ['구랑위 페리 (11/16)','성수기엔 1~2일 전에 매진','11/14~15'],
+  ['난푸퉈사 (선택)','넣는다면 예약 필요 여부 확인','출발 전'],
+];
+
+const CHECKS = [
+  { h:'출발 전', items:[
+    ['p1','여권 유효기간 확인 (4인 모두)'],
+    ['p2','무비자 조건 재확인 (30일, 2026-12-31까지 연장 발표, 정책 변경 가능)'],
+    ['p3','왕복 항공권, 숙소 예약 확인서 스크린샷 또는 출력'],
+    ['p4','알리페이 또는 위챗페이에 해외 카드 연동'],
+    ['p5','로밍 또는 eSIM (지도, 디디, 위챗용)'],
+    ['p6','지도앱(Amap/바이두), 디디, 번역앱 설치'],
+    ['p7','소액 위안화 현금'],
+    ['p8','부모님 상비약, 복용 중인 약'],
+  ]},
+  { h:'예약', items:[
+    ['b1','토루 투어 예약 (일요일 차량, 가격, 픽업 시간, 점심 포함 문의)'],
+    ['b2','구랑위 페리 (11/16), 11/14~15 사이'],
+    ['b3','1일차 저녁 식당 정하고 예약이 되면 예약'],
+    ['b4','숙소 호스트에 도착 시간(14:30~15:00쯤) 알리고 체크인 방법 확인'],
+  ]},
+  { h:'짐', items:[
+    ['k1','얇은 겹쳐 입는 옷 (낮은 따뜻, 해 질 무렵 바닷바람은 쌀쌀)'],
+    ['k2','바람막이 또는 가디건 (토루가 있는 산간은 시내보다 서늘)'],
+    ['k3','편한 운동화 (골목과 계단 많음)'],
+    ['k4','선글라스, 모자, 선크림'],
+    ['k5','접이식 우산'],
+    ['k6','보조배터리, 멀티 어댑터'],
+  ]},
+  { h:'귀국 전날', items:[
+    ['r1','짐 정리, 남은 위안화 정리'],
+    ['r2','체크아웃 방법 호스트 확인'],
+    ['r3','아침 디디 호출 시간 정하기'],
+  ]},
+];
+const COSTS = [
+  ['구랑위 페리 왕복',35,''],
+  ['숙장화원 + 피아노 박물관 묶음',50,'단품이면 30 + 50'],
+  ['일광암',60,'선택'],
+];
+
+/* ---------- 유틸 ---------- */
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const $ = (s, r=document) => r.querySelector(s);
+const amap = zh => 'https://uri.amap.com/search?keyword=' + encodeURIComponent(zh) + '&city=' + encodeURIComponent('厦门');
+const gmap = q => 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(q);
+const pic = q => 'https://search.naver.com/search.naver?where=image&query=' + encodeURIComponent(q);
+function lsGet(k, d){ try{ const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; }catch(e){ return d; } }
+function lsSet(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
+
+/* ---------- 일자 뷰 ---------- */
+function dayView(d){
+  const rows = d.rows.map(r => {
+    const tag = r[3]==='opt' ? '<span class="tag opt">선택</span>' : r[3]==='book' ? '<span class="tag book">예약</span>' : '';
+    return `<li><div class="time">${esc(r[0])}</div><div class="ev"><strong>${esc(r[1])}${tag}</strong>${r[2]?`<span class="note">${esc(r[2])}</span>`:''}</div></li>`;
+  }).join('');
+  const box = d.box ? `<div class="box gap ${d.box.cls}"><h4>${esc(d.box.h)}</h4><ul>${d.box.lines.map(l=>`<li>${esc(l)}</li>`).join('')}</ul></div>` : '';
+  const after = d.after ? `<div class="box gap"><h4>${esc(d.after.h)}</h4><ul>${d.after.items.map(l=>`<li>${esc(l)}</li>`).join('')}</ul></div>` : '';
+  return `<h2>${esc(d.date)} · ${esc(d.title)}</h2><p class="lead">${esc(d.lead)}</p><ol class="timeline">${rows}</ol>${box}${after}`;
+}
+
+/* ---------- 지도 뷰 ---------- */
+/* WGS84(GPS) -> GCJ-02. 중국 지도(Amap) 타일은 GCJ-02 좌표라 GPS 좌표를 그대로 찍으면 수백 m 어긋나요. */
+function wgs2gcj(lat, lng){
+  const a = 6378245.0, ee = 0.00669342162296594323, PI = Math.PI;
+  const x = lng - 105, y = lat - 35;
+  let dLat = -100 + 2*x + 3*y + 0.2*y*y + 0.1*x*y + 0.2*Math.sqrt(Math.abs(x));
+  dLat += (20*Math.sin(6*x*PI) + 20*Math.sin(2*x*PI)) * 2/3;
+  dLat += (20*Math.sin(y*PI) + 40*Math.sin(y/3*PI)) * 2/3;
+  dLat += (160*Math.sin(y/12*PI) + 320*Math.sin(y*PI/30)) * 2/3;
+  let dLng = 300 + x + 2*y + 0.1*x*x + 0.1*x*y + 0.1*Math.sqrt(Math.abs(x));
+  dLng += (20*Math.sin(6*x*PI) + 20*Math.sin(2*x*PI)) * 2/3;
+  dLng += (20*Math.sin(x*PI) + 40*Math.sin(x/3*PI)) * 2/3;
+  dLng += (150*Math.sin(x/12*PI) + 300*Math.sin(x/30*PI)) * 2/3;
+  const rad = lat/180*PI; let m = Math.sin(rad); m = 1 - ee*m*m; const s = Math.sqrt(m);
+  dLat = (dLat*180) / ((a*(1-ee)) / (m*s) * PI);
+  dLng = (dLng*180) / (a/s * Math.cos(rad) * PI);
+  return [lat + dLat, lng + dLng];
+}
+function km(a, b){
+  const R = 6371, r = Math.PI/180, dLa = (b.lat-a.lat)*r, dLo = (b.lng-a.lng)*r;
+  const h = Math.sin(dLa/2)**2 + Math.cos(a.lat*r)*Math.cos(b.lat*r)*Math.sin(dLo/2)**2;
+  return 2*R*Math.asin(Math.sqrt(h));
+}
+const fmtKm = d => d < 1 ? `${Math.max(50, Math.round(d*1000/50)*50)}m` : `${d < 10 ? d.toFixed(1) : Math.round(d)}km`;
+
+const ITEMS = [
+  ...PLACES.filter(p => !p.nopin).map(p => ({ id:'p-'+p.id, kind:p.id==='home'?'home':'place', ko:p.ko, zh:p.zh, days:p.days, lat:p.lat, lng:p.lng, approx:p.approx })),
+  ...REST.map(r => ({ id:'r-'+r.id, kind:'rest', ko:r.ko, zh:r.zh, days:RGEO[r.id].days, lat:RGEO[r.id].lat, lng:RGEO[r.id].lng, approx:RGEO[r.id].approx, r, g:RGEO[r.id] })),
+];
+const BASES = [['p-home','숙소'],['p-zs','중산루'],['p-ltl','구랑위']];
+const MS = { day:'all', kind:'all', mode:'map', base:'p-home', me:null, watch:null };
+
+function visibleItems(){
+  return ITEMS.filter(it => it.kind==='home' || ((MS.kind==='all' || MS.kind===it.kind) && (MS.day==='all' || it.days.includes(Number(MS.day)))));
+}
+function origin(){ return MS.me || ITEMS.find(i => i.id===MS.base); }
+function distLabel(it){
+  const o = origin(); if(!o || o.id===it.id) return '';
+  return (MS.me ? '내 위치에서 ' : (BASES.find(b=>b[0]===MS.base)||[])[1] + '에서 ') + fmtKm(km(o, it));
+}
+function navLinks(it){
+  const name = it.zh || it.ko.replace(/\(.*?\)/g,'').trim();
+  const amapNav = `https://uri.amap.com/navigation?to=${it.lng},${it.lat},${encodeURIComponent(name)}&mode=car&coordinate=wgs84&callnative=1`;
+  const gNav = it.approx ? gmap((it.zh || it.ko.replace(/\(.*?\)/g,'').trim()) + ' 厦门') : `https://www.google.com/maps/dir/?api=1&destination=${it.lat},${it.lng}`;
+  let h = (it.approx && it.zh) ? `<a class="lnk" href="${amap(it.zh)}" target="_blank" rel="noopener">Amap 검색</a>`
+    : `<a class="lnk" href="${amapNav}" target="_blank" rel="noopener">길찾기 (Amap)</a>`;
+  h += `<a class="lnk" href="${gNav}" target="_blank" rel="noopener">구글</a>`;
+  if(it.r && it.r.link) h += `<a class="lnk" href="${it.r.link}" target="_blank" rel="noopener">${esc(it.r.linkLabel||'상세')}</a>`;
+  if(it.zh) h += `<button class="copy" type="button" data-copy="${esc(it.zh)}">주소/이름 복사</button>`;
+  return h;
+}
+function itemBody(it){
+  const kindLbl = it.kind==='rest' ? '<span class="kind rest">식당</span>' : '<span class="kind place">' + (it.kind==='home'?'숙소':'장소') + '</span>';
+  let meta = kindLbl;
+  if(it.r){ meta += esc([it.r.price, it.g.where || it.r.area].filter(Boolean).join(' · ')); }
+  else meta += esc(it.days.map(d => d+'일차').join(', '));
+  if(it.approx) meta += ` <span class="approxnote">위치 대략</span>`;
+  const dishes = it.g && it.g.dishes.length ? `<div class="chips">${it.g.dishes.map(id => DISH[id] ?
+    `<button class="chip dish" type="button" data-dish="${id}" aria-pressed="${!!order.o[id]}"><span class="z">${esc(DISH[id].zh)}</span><span class="k">${esc(DISH[id].ko)}</span></button>` : '').join('')}</div>` : '';
+  const sig = it.r ? `<p class="meta" style="color:var(--ink)">${esc(it.r.sig)}</p>` : '';
+  return `<div class="top"><h4>${esc(it.ko)}</h4><span class="dist">${esc(distLabel(it))}</span></div>
+    ${it.zh ? `<div class="zh">${esc(it.zh)}</div>` : ''}
+    <p class="meta">${meta}</p>${sig}${dishes}
+    <div class="acts">${navLinks(it)}</div>`;
+}
+
+/* Leaflet 지도 */
+let LM = null, layerAmap = null, layerOsm = null, curBase = 'amap', markerLayer = null, meLayer = null, tileOk = 0, tileErr = 0;
+const MK = {};
+const proj = (lat, lng) => curBase==='amap' ? wgs2gcj(lat, lng) : [lat, lng];
+function mstatus(t, warn){ const el = $('#mstatus'); if(!el) return; el.textContent = t; el.classList.toggle('warn', !!warn); }
+function initMap(){
+  if(LM) return true;
+  if(!window.L){ mstatus('지도 프로그램을 불러오지 못했어요. 인터넷 연결을 확인하거나 리스트 보기를 쓰세요.', true); return false; }
+  LM = L.map('lmap', { zoomControl:true }).setView(proj(24.465, 118.11), 12);
+  layerAmap = L.tileLayer('https://webrd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}', { subdomains:'1234', maxZoom:18, attribution:'© 高德地图 Amap' });
+  layerOsm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom:19, attribution:'© OpenStreetMap' });
+  layerAmap.addTo(LM);
+  L.control.layers({ '중국 지도 (Amap)':layerAmap, 'OpenStreetMap':layerOsm }, null, { position:'topright' }).addTo(LM);
+  [layerAmap, layerOsm].forEach(l => {
+    l.on('tileload', () => { tileOk++; });
+    l.on('tileerror', () => { tileErr++; if(tileErr >= 6 && tileOk === 0) mstatus('지도 그림을 불러오지 못했어요. 오른쪽 위에서 다른 지도를 고르거나 리스트 보기를 쓰세요.', true); });
+  });
+  LM.on('baselayerchange', e => { curBase = e.layer===layerAmap ? 'amap' : 'osm'; tileOk = 0; tileErr = 0; drawMarkers(); drawMe(); });
+  LM.on('popupopen', syncChips);
+  markerLayer = L.layerGroup().addTo(LM);
+  meLayer = L.layerGroup().addTo(LM);
+  drawMarkers(); fitVisible(); drawMe();
+  return true;
+}
+function drawMarkers(){
+  if(!LM) return;
+  markerLayer.clearLayers();
+  visibleItems().forEach(it => {
+    const label = it.kind==='rest' ? '식' : it.kind==='home' ? '숙' : '';
+    const icon = L.divIcon({ className:'', html:`<div class="pin ${it.kind==='home'?'home':it.kind} ${it.approx?'approx':''}"><span>${label}</span></div>`, iconSize:[26,26], iconAnchor:[13,26], popupAnchor:[0,-24], tooltipAnchor:[0,-22] });
+    const m = L.marker(proj(it.lat, it.lng), { icon, title:it.ko, zIndexOffset: it.kind==='home' ? 500 : 0 })
+      .bindPopup(() => `<div class="pc">${itemBody(it)}</div>`, { maxWidth:290 })
+      .bindTooltip(it.ko.replace(/\(.*?\)/g,'').trim(), { direction:'top' });
+    MK[it.id] = m; markerLayer.addLayer(m);
+  });
+}
+function fitVisible(){
+  if(!LM) return;
+  const far = it => it.lng < 117.6;
+  let pts = visibleItems().filter(it => MS.day==='2' || !far(it));
+  if(MS.day!=='2' && pts.length < 2) pts = visibleItems();
+  if(!pts.length) return;
+  LM.fitBounds(L.latLngBounds(pts.map(it => proj(it.lat, it.lng))), { padding:[28,28], maxZoom:15 });
+}
+function drawMe(){
+  if(!LM) return;
+  meLayer.clearLayers();
+  if(!MS.me) return;
+  const p = proj(MS.me.lat, MS.me.lng);
+  L.circle(p, { radius:MS.me.acc, weight:1, color:'#1A73E8', fillColor:'#1A73E8', fillOpacity:.1, interactive:false }).addTo(meLayer);
+  L.marker(p, { icon:L.divIcon({ className:'', html:'<div class="me"></div>', iconSize:[16,16], iconAnchor:[8,8] }), zIndexOffset:1000, title:'내 위치' }).addTo(meLayer);
+}
+
+/* 리스트 */
+function renderNear(){
+  const ul = $('#nlist'); if(!ul) return;
+  const o = origin();
+  const list = visibleItems().filter(it => it.kind!=='home').map(it => ({ it, d: o ? km(o, it) : 0 })).sort((a,b) => a.d - b.d);
+  ul.innerHTML = list.length ? list.map(x => `<li>${itemBody(x.it)}</li>`).join('') : '<li class="empty">조건에 맞는 곳이 없어요.</li>';
+  $('#basePick').hidden = !!MS.me || MS.mode!=='list';
+}
+function setMode(m){
+  MS.mode = m;
+  document.querySelectorAll('[data-mode]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.mode===m)));
+  $('#lmap').hidden = m!=='map';
+  $('#nlist').hidden = m!=='list';
+  if(m==='map'){ if(initMap()) setTimeout(() => LM.invalidateSize(), 0); }
+  renderNear();
+}
+function toggleLoc(){
+  const btn = $('#locBtn');
+  if(MS.watch !== null){
+    navigator.geolocation.clearWatch(MS.watch); MS.watch = null; MS.me = null;
+    btn.dataset.on = '0'; btn.textContent = '◎ 내 위치'; drawMe(); renderNear();
+    mstatus('내 위치 표시를 껐어요.'); return;
+  }
+  if(!navigator.geolocation){ mstatus('이 브라우저에서는 위치를 쓸 수 없어요.', true); return; }
+  mstatus('위치를 찾는 중이에요…');
+  let first = true;
+  MS.watch = navigator.geolocation.watchPosition(p => {
+    MS.me = { lat:p.coords.latitude, lng:p.coords.longitude, acc:p.coords.accuracy };
+    btn.dataset.on = '1'; btn.textContent = '◉ 내 위치 끄기';
+    drawMe(); renderNear();
+    if(first && LM && MS.mode==='map'){ LM.setView(proj(MS.me.lat, MS.me.lng), Math.max(LM.getZoom(), 15)); }
+    first = false;
+    mstatus(`내 위치를 표시하고 있어요 (오차 약 ${Math.round(MS.me.acc)}m). 리스트는 내 위치에서 가까운 순이에요.`);
+  }, err => {
+    if(MS.watch !== null) navigator.geolocation.clearWatch(MS.watch);
+    MS.watch = null; MS.me = null; btn.dataset.on = '0'; btn.textContent = '◎ 내 위치'; drawMe(); renderNear();
+    mstatus(err.code === 1 ? '위치 권한이 꺼져 있어요. 브라우저 설정에서 이 사이트의 위치 접근을 허용한 뒤 다시 눌러 주세요.'
+      : '위치를 찾지 못했어요. 잠시 뒤 다시 눌러 주세요.', true);
+  }, { enableHighAccuracy:true, maximumAge:15000, timeout:20000 });
+}
+function focusItem(id){
+  MS.day = 'all'; MS.kind = 'all';
+  document.querySelectorAll('.dayf').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.f==='all')));
+  document.querySelectorAll('.kindf').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.k==='all')));
+  renderPlaces('all');
+  setMode('map');
+  if(!LM || !MK[id]) return;
+  const it = ITEMS.find(i => i.id===id);
+  LM.setView(proj(it.lat, it.lng), 16);
+  MK[id].openPopup();
+}
+
+function placeItem(p){
+  const acts = `<button class="copy" type="button" data-copy="${esc(p.zh)}">복사</button>` +
+    `<a class="lnk" href="${amap(p.zh)}" target="_blank" rel="noopener">Amap</a>` +
+    `<a class="lnk" href="${gmap(p.zh + ' 厦门')}" target="_blank" rel="noopener">구글</a>` +
+    ((p.small || p.ko === '공항') ? '' : `<a class="lnk" href="${pic(p.ko.replace(/\(.*?\)/g,'').trim() + ' 샤먼')}" target="_blank" rel="noopener">사진</a>`);
+  return `<li><div><div class="ko">${esc(p.ko)}</div><div class="zh ${p.small?'small':''}">${esc(p.zh)}</div></div><div class="acts">${acts}</div></li>`;
+}
+function mapView(){
+  const colors = {1:'var(--d1)',2:'var(--d2)',3:'var(--d3)',4:'var(--d4)'};
+  const chips = [['all','전체']].concat(DAYS.map((d,i)=>[String(i+1), d.n+' '+d.title])).map(c =>
+    `<button class="chip dayf" type="button" data-f="${c[0]}" aria-pressed="${c[0]==='all'}">${c[0]!=='all'?`<span class="dot" style="color:${colors[c[0]]}"></span>`:''}${esc(c[1])}</button>`).join('');
+  const kinds = [['all','전체'],['rest','식당'],['place','장소']].map(k =>
+    `<button class="chip kindf" type="button" data-k="${k[0]}" aria-pressed="${k[0]==='all'}">${k[1]}</button>`).join('');
+  const bases = BASES.map(b => `<button class="chip basef" type="button" data-b="${b[0]}" aria-pressed="${b[0]===MS.base}">${b[1]}</button>`).join('');
+  return `<h2>지도</h2><p class="lead">저장한 식당과 장소를 지도에서 보고, 내 위치에서 가까운 곳을 찾아요. 핀을 누르면 대표 메뉴와 길찾기가 나와요.</p>
+    <div class="mtools">
+      <div class="seg" role="group" aria-label="보기 방식"><button type="button" data-mode="map" aria-pressed="true">지도 보기</button><button type="button" data-mode="list" aria-pressed="false">리스트 보기</button></div>
+      <button type="button" class="locbtn" id="locBtn" data-on="0">◎ 내 위치</button>
+    </div>
+    <div class="chips gapt" id="dayChips">${chips}</div>
+    <div class="chips gapt" id="kindChips">${kinds}</div>
+    <div id="lmap" role="region" aria-label="샤먼 지도"></div>
+    <div class="basepick" id="basePick" hidden><span>거리 기준</span>${bases}</div>
+    <ul class="nlist" id="nlist" hidden></ul>
+    <p class="mstatus" id="mstatus">점선 테두리 핀은 위치가 대략이에요. 길찾기를 누르면 Amap이나 구글 지도 앱에서 내 위치 기준 경로가 열려요.</p>
+    <h3 id="plTitle">장소 (택시, 지도앱용)</h3>
+    <ul class="plist" id="placeList"></ul>
+    <h3>한마디</h3>
+    <ul class="plist">${PHRASES.map(p=>`<li><div><div class="ko">${esc(p[0])}</div><div class="zh">${esc(p[1])}</div></div><div class="acts"><button class="copy" type="button" data-copy="${esc(p[1])}">복사</button></div></li>`).join('')}</ul>`;
+}
+function renderPlaces(f){
+  const list = PLACES.filter(p => f==='all' || p.days.includes(Number(f)));
+  $('#placeList').innerHTML = list.map(placeItem).join('');
+  MS.day = f;
+  drawMarkers(); fitVisible(); renderNear();
+}
+
+/* ---------- 맛집 뷰 ---------- */
+function restCard(r){
+  const q = r.zh ? r.zh + ' 厦门' : r.ko.replace(/\(.*?\)/g,'').trim() + ' Xiamen';
+  const links = `<button class="lnk" type="button" data-showmap="r-${r.id}">지도에서 보기</button>` + (r.link ? `<a class="lnk" href="${r.link}" target="_blank" rel="noopener">${esc(r.linkLabel||'상세')}</a>` : '') + (r.zh ? `<a class="lnk" href="${amap(r.zh)}" target="_blank" rel="noopener">Amap</a>` : '') +
+    `<a class="lnk" href="${gmap(q)}" target="_blank" rel="noopener">구글</a>` +
+    `<a class="lnk" href="${pic(q)}" target="_blank" rel="noopener">사진</a>`;
+  return `<div class="rest" data-tags="${r.tags.join(' ')}">
+    <div class="top"><h4>${esc(r.ko)}</h4>${r.price?`<span class="price">${esc(r.price)}</span>`:''}</div>
+    ${r.zh?`<div class="zh">${esc(r.zh)}</div>`:''}
+    <p class="meta">${r.badge?`<span class="badge ${r.hot?'hot':''}">${esc(r.badge)}</span>`:''}${esc(r.where)} · ${esc(r.area)}</p>
+    <p class="sig"><b>대표</b> ${esc(r.sig)}</p>
+    <p class="rn">${esc(r.rn)}</p>
+    <div class="acts">${links}</div></div>`;
+}
+function dishChip(i){
+  const alt = i[3] ? ` <span class="k">(${esc(i[3])})</span>` : '';
+  const skip = ['rice','radish','ssauce'].includes(i[0]);
+  const photo = skip ? '' : `<a class="lnk" href="${pic(i[1].replace(/\(.*?\)/g,'').trim() + ' 샤먼')}" target="_blank" rel="noopener">사진</a>`;
+  return `<div class="dwrap"><button class="chip dish" type="button" data-dish="${i[0]}" aria-pressed="false"><span class="z">${esc(i[2])}</span><span class="k">${esc(i[1])}</span></button>${photo}</div>`;
+}
+function foodView(){
+  const fchips = RFILTERS.map(f => `<button class="chip rf" type="button" data-f="${f[0]}" aria-pressed="${f[0]==='all'}">${esc(f[1])}</button>`).join('');
+  const dict = DICT.map(g => `<h3>${esc(g.h)}</h3><div class="chips">${g.items.map(dishChip).join('')}</div>`).join('');
+  return `<h2>맛집, 메뉴</h2><p class="lead">식당을 고르고, 아래 메뉴 사전에서 먹고 싶은 걸 눌러 중국어 주문서를 만들어요.</p>
+    <div class="chips" id="restChips">${fchips}</div>
+    <div id="restList">${REST.map(restCard).join('')}</div>
+    <div class="box gap"><h4>해산물 식당 주문 팁</h4><ul>
+      <li>수조에서 고르는 곳은 가격표(보통 500g 기준)가 분명한 정찰제 식당으로</li>
+      <li>무게 잴 때 저울 숫자를 사진으로 남기면 안심이에요</li>
+      <li>튀김보다 찜 위주로 시키면 속이 편해요</li>
+      <li>대부분 따뜻한 차가 기본이에요. 얼음물은 따로 요청</li>
+    </ul></div>
+    <h2 style="margin-top:28px">메뉴 사전</h2><p class="lead">메뉴를 누르면 주문서에 담기고, 아래 사진 버튼은 음식 사진을 새 탭에서 보여줘요. 식당 메뉴판에 없을 수도 있으니 직원에게 물어보세요.</p>
+    ${dict}
+    <h3>요청 사항</h3><div class="chips">${MODS.map(m=>`<button class="chip dish" type="button" data-mod="${m[0]}" aria-pressed="false"><span class="z">${esc(m[2])}</span><span class="k">${esc(m[1])}</span></button>`).join('')}</div>`;
+}
+
+/* ---------- 주문 상태 ---------- */
+let order = lsGet('xiamen-order-v1', {o:{}, m:{}});
+function saveOrder(){ lsSet('xiamen-order-v1', order); }
+function orderCount(){ return Object.keys(order.o).length + Object.keys(order.m).length; }
+function syncChips(){
+  document.querySelectorAll('[data-dish]').forEach(b => b.setAttribute('aria-pressed', String(!!order.o[b.dataset.dish])));
+  document.querySelectorAll('[data-mod]').forEach(b => b.setAttribute('aria-pressed', String(!!order.m[b.dataset.mod])));
+  const n = orderCount();
+  $('#ocount').textContent = `선택한 메뉴·요청 ${n}개`;
+  $('#orderbar').hidden = !(n > 0 && (currentView === 'food' || currentView === 'map'));
+}
+function orderText(){
+  const lines = ['我们四位，请给我们这些菜：'];
+  Object.entries(order.o).forEach(([id,q]) => lines.push(`${DISH[id].zh} ×${q}`));
+  MODS.forEach(m => { if(order.m[m[0]]) lines.push(m[2]); });
+  return lines.join('\n');
+}
+function renderSheet(){
+  const dishes = Object.entries(order.o);
+  const mods = MODS.filter(m => order.m[m[0]]);
+  let h = `<div class="hello">我们四位，请给我们这些菜：</div><div class="k" style="color:var(--muted);font-size:13px">저희 네 명이에요. 이 메뉴를 주세요.</div>`;
+  if(!dishes.length && !mods.length) h += `<p class="empty">선택한 메뉴가 없어요.</p>`;
+  h += dishes.map(([id,q]) => `<div class="oline"><div><div class="z">${esc(DISH[id].zh)}</div><div class="k">${esc(DISH[id].ko)}</div></div>
+    <div class="qty"><button type="button" data-q="-1" data-id="${id}" aria-label="줄이기">−</button><span>${q}</span><button type="button" data-q="1" data-id="${id}" aria-label="늘리기">+</button></div></div>`).join('');
+  if(mods.length) h += `<h3>요청 사항</h3>` + mods.map(m => `<div class="mline">${esc(m[2])} <span class="k" style="font-size:13px;color:var(--muted)">${esc(m[1])}</span></div>`).join('');
+  h += `<div style="display:flex;gap:8px;margin-top:20px;flex-wrap:wrap"><button type="button" class="bigbtn" id="copyOrder">텍스트 복사</button><button type="button" class="bigbtn ghost" id="clearOrder">모두 지우기</button></div>`;
+  $('#sheetBody').innerHTML = h;
+}
+
+/* ---------- 준비 뷰 ---------- */
+function prepView(){
+  const store = lsGet('xiamen-checks-v2', {});
+  const book = `<h3>먼저 예약할 것</h3><ul class="book-list">${BOOKINGS.map(b=>
+    `<li><div><b>${esc(b[0])}</b><span class="d">${esc(b[1])}</span></div><span class="when">${esc(b[2])}</span></li>`).join('')}</ul>`;
+  const lists = CHECKS.map(g => `<h3>${esc(g.h)}</h3><ul class="checks">${g.items.map(i =>
+    `<li><label><input type="checkbox" id="c-${i[0]}" data-key="${i[0]}" ${store[i[0]]?'checked':''}><span>${esc(i[1])}</span></label></li>`).join('')}</ul>`).join('');
+  const cost = `<h3>비용 (4인, 위안)</h3><div class="tablewrap"><table><thead><tr><th>항목</th><th class="r">1인</th><th class="r">4인</th><th>비고</th></tr></thead><tbody>${
+    COSTS.map(c=>`<tr><td>${esc(c[0])}</td><td class="r">¥${c[1]}</td><td class="r">¥${c[1]*4}</td><td class="m">${esc(c[2])}</td></tr>`).join('')
+  }<tr><td>토루 차량/투어</td><td class="r">-</td><td class="r">-</td><td class="m">문의 후 기입</td></tr><tr><td>난푸퉈사</td><td class="r">무료로 알려짐</td><td class="r">-</td><td class="m">확인 필요</td></tr></tbody></table></div>`;
+  return `<h2>준비</h2><p class="lead">체크 표시는 이 기기에만 저장돼요.</p>${book}${lists}${cost}`;
+}
+
+/* ---------- 조립 ---------- */
+const VIEWS = [
+  ...DAYS.map(d => ({id:d.id, label:d.n, sub:d.date.slice(0,5), html:dayView(d)})),
+  {id:'map', label:'지도', sub:'경로', html:mapView()},
+  {id:'food', label:'맛집', sub:'메뉴', html:foodView()},
+  {id:'prep', label:'준비', sub:'체크', html:prepView()},
+];
+const tabs = $('#tabs'), views = $('#views');
+tabs.innerHTML = VIEWS.map(v => `<button type="button" role="tab" id="tab-${v.id}" data-id="${v.id}" aria-controls="v-${v.id}"><b>${esc(v.label)}</b><small>${esc(v.sub)}</small></button>`).join('');
+views.innerHTML = VIEWS.map(v => `<section class="view" id="v-${v.id}" role="tabpanel" aria-labelledby="tab-${v.id}" hidden>${v.html}</section>`).join('');
+
+let currentView = 'day1';
+function show(id, scroll){
+  if(id === 'places') id = 'map';
+  if(!VIEWS.some(v => v.id===id)) id = 'day1';
+  currentView = id;
+  VIEWS.forEach(v => {
+    $('#v-'+v.id).hidden = v.id !== id;
+    $('#tab-'+v.id).setAttribute('aria-selected', String(v.id === id));
+  });
+  syncChips();
+  if(id === 'map' && MS.mode === 'map'){ if(initMap()) setTimeout(() => LM.invalidateSize(), 0); }
+  if(scroll){ const n = $('#tabs'); window.scrollTo({top: Math.max(0, n.offsetTop - (parseFloat(getComputedStyle(document.documentElement).paddingTop)||0)), behavior:'auto'}); }
+}
+tabs.addEventListener('click', e => {
+  const b = e.target.closest('button[data-id]'); if(!b) return;
+  location.hash = b.dataset.id; show(b.dataset.id, true);
+});
+window.addEventListener('hashchange', () => show(location.hash.slice(1), false));
+
+renderPlaces('all');
+show(location.hash.slice(1) || 'day1', false);
+
+/* ---------- 이벤트 ---------- */
+async function onClick(e){
+  const t = e.target;
+  let b;
+  if((b = t.closest('.dayf'))){
+    document.querySelectorAll('.dayf').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+    renderPlaces(b.dataset.f); return;
+  }
+  if((b = t.closest('.kindf'))){
+    document.querySelectorAll('.kindf').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+    MS.kind = b.dataset.k; drawMarkers(); fitVisible(); renderNear(); return;
+  }
+  if((b = t.closest('.basef'))){
+    document.querySelectorAll('.basef').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+    MS.base = b.dataset.b; renderNear(); return;
+  }
+  if((b = t.closest('[data-mode]'))){ setMode(b.dataset.mode); return; }
+  if(t.closest('#locBtn')){ toggleLoc(); return; }
+  if((b = t.closest('[data-showmap]'))){ location.hash = 'map'; show('map', true); focusItem(b.dataset.showmap); return; }
+  if((b = t.closest('.rf'))){
+    document.querySelectorAll('.rf').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+    document.querySelectorAll('#restList .rest').forEach(c => { c.hidden = !(b.dataset.f==='all' || c.dataset.tags.split(' ').includes(b.dataset.f)); });
+    return;
+  }
+  if((b = t.closest('[data-dish]'))){
+    const id = b.dataset.dish; if(order.o[id]) delete order.o[id]; else order.o[id] = 1;
+    saveOrder(); syncChips(); return;
+  }
+  if((b = t.closest('[data-mod]'))){
+    const id = b.dataset.mod; if(order.m[id]) delete order.m[id]; else order.m[id] = 1;
+    saveOrder(); syncChips(); return;
+  }
+  if(t.closest('#openSheet')){ renderSheet(); $('#sheet').hidden = false; $('#sheet').scrollTop = 0; return; }
+  if(t.closest('#closeSheet')){ $('#sheet').hidden = true; syncChips(); return; }
+  if((b = t.closest('[data-q]'))){
+    const id = b.dataset.id, q = (order.o[id]||1) + Number(b.dataset.q);
+    if(q < 1) delete order.o[id]; else order.o[id] = q;
+    saveOrder(); renderSheet(); syncChips(); return;
+  }
+  if(t.closest('#clearOrder')){ order = {o:{}, m:{}}; saveOrder(); renderSheet(); syncChips(); return; }
+  if(t.closest('#copyOrder')){ await doCopy(orderText(), t.closest('#copyOrder')); return; }
+  if((b = t.closest('.copy'))){ await doCopy(b.dataset.copy, b); return; }
+}
+document.addEventListener('click', onClick);
+document.addEventListener('keydown', e => { if(e.key === 'Escape' && !$('#sheet').hidden){ $('#sheet').hidden = true; syncChips(); } });
+views.addEventListener('change', e => {
+  const k = e.target.dataset && e.target.dataset.key; if(!k) return;
+  const o = lsGet('xiamen-checks-v2', {}); if(e.target.checked) o[k]=1; else delete o[k]; lsSet('xiamen-checks-v2', o);
+});
+async function doCopy(text, btn){
+  let ok = false;
+  try{ await navigator.clipboard.writeText(text); ok = true; }catch(err){
+    const ta = document.createElement('textarea'); ta.value = text; ta.style.cssText='position:fixed;opacity:0';
+    document.body.appendChild(ta); ta.select();
+    try{ ok = document.execCommand('copy'); }catch(e2){}
+    ta.remove();
+  }
+  const old = btn.textContent; btn.textContent = ok ? '복사됨' : '길게 눌러 복사';
+  setTimeout(() => { btn.textContent = old; }, 1400);
+}
+syncChips();
+</script>
+
+</body></html>
