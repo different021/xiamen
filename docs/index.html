@@ -522,10 +522,11 @@ function distLabel(it){
 }
 function navLinks(it){
   const name = it.zh || it.ko.replace(/\(.*?\)/g,'').trim();
-  const amapNav = `https://uri.amap.com/navigation?to=${it.lng},${it.lat},${encodeURIComponent(name)}&mode=car&coordinate=wgs84&callnative=1`;
+  /* 길찾기(navigation) 링크는 출발지가 중국 밖이면 "결과 없음"이 떠서, 장소를 지도에 띄우는 marker 링크를 써요. 거기서 路线(경로)를 누르면 돼요. */
+  const amapNav = `https://uri.amap.com/marker?position=${it.lng},${it.lat}&name=${encodeURIComponent(name)}&coordinate=wgs84&callnative=1`;
   const gNav = it.approx ? gmap((it.zh || it.ko.replace(/\(.*?\)/g,'').trim()) + ' 厦门') : `https://www.google.com/maps/dir/?api=1&destination=${it.lat},${it.lng}`;
   let h = (it.approx && it.zh) ? `<a class="lnk" href="${amap(it.zh)}" target="_blank" rel="noopener">Amap 검색</a>`
-    : `<a class="lnk" href="${amapNav}" target="_blank" rel="noopener">길찾기 (Amap)</a>`;
+    : `<a class="lnk" href="${amapNav}" target="_blank" rel="noopener">Amap에서 보기</a>`;
   h += `<a class="lnk" href="${gNav}" target="_blank" rel="noopener">구글</a>`;
   if(it.r && it.r.link) h += `<a class="lnk" href="${it.r.link}" target="_blank" rel="noopener">${esc(it.r.linkLabel||'상세')}</a>`;
   if(it.zh) h += `<button class="copy" type="button" data-copy="${esc(it.zh)}">주소/이름 복사</button>`;
@@ -675,7 +676,7 @@ function mapView(){
     <div id="lmap" role="region" aria-label="샤먼 지도"></div>
     <div class="basepick" id="basePick" hidden><span>거리 기준</span>${bases}</div>
     <ul class="nlist" id="nlist" hidden></ul>
-    <p class="mstatus" id="mstatus">점선 테두리 핀은 위치가 대략이에요. 길찾기를 누르면 Amap이나 구글 지도 앱에서 내 위치 기준 경로가 열려요.</p>
+    <p class="mstatus" id="mstatus">점선 테두리 핀은 위치가 대략이에요. "Amap에서 보기"를 누르면 Amap에 그 장소가 뜨고, 거기서 路线(경로)를 누르면 내 위치 기준 길찾기가 돼요.</p>
     <h3 id="plTitle">장소 (택시, 지도앱용)</h3>
     <ul class="plist" id="placeList"></ul>
     <h3>한마디</h3>
