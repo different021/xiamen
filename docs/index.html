@@ -186,6 +186,7 @@ h3{font-size:13px; letter-spacing:.06em; color:var(--muted); margin:26px 0 8px; 
 .rest .sig{font-size:14px; margin:6px 0 0}
 .rest .rn{font-size:13px; margin:6px 0 0}
 .rest .acts{justify-content:flex-start; margin-top:10px}
+.rest.must .top{align-items:flex-start}
 .badge{display:inline-block; font-size:11px; font-weight:700; padding:1px 7px; border-radius:999px; background:var(--soft); color:var(--accent); margin-right:4px}
 .badge.hot{background:var(--warn-bg); color:var(--warn)}
 
@@ -468,6 +469,9 @@ const DICT = [
     ['wgdf','백합조개 두부탕','文蛤豆腐汤'],['hgj','새우 하가우 (딤섬)','虾饺皇'],['yzgl','망고 디저트','杨枝甘露'],
     ['lzt','여섯 가지 버섯탕','六珍汤'],['gxfan','알배기 게 솥밥','膏蟹焖饭'],
   ]},
+  { h:'토루 (객가 요리)', items:[
+    ['ndf','객가 두부 완자','客家酿豆腐'],['yjj','소금구이 닭','盐焗鸡'],
+  ]},
   { h:'해산물 · 일반', items:[
     ['scallop','마늘 당면 가리비찜','蒜蓉粉丝蒸扇贝'],['fish','생선찜 (우럭 등)','清蒸鱼'],['meicai','매이차이 삼겹찜','梅菜扣肉'],
     ['tofu','철판 두부','铁板豆腐'],['egg','계란볶음밥','蛋炒饭'],['greens','청경채볶음','清炒青菜'],['rice','밥','米饭'],
@@ -540,6 +544,23 @@ addR({ id:'nn', ko:'뉴뉴 식당 (옛 샤먼 가정식)', zh:'老厦门特色�
   sig:'노란조기 간장조림, 옛날식 단지 탕, 병어찜, 땅콩탕. 평점 4.8 (리뷰 137개)',
   rn:'28년 된 동네 해산물집이고 붉은 벽돌 옛집이에요(2026년 후기). 대표 메뉴 장무야는 생강이 강해요. 전화 +86 189 5928 8559' },
   { lat:24.441813, lng:118.087412, days:[3], dishes:[['黄花鱼酱油水','노란조기 간장조림'],['瓦罐汤','단지 탕'],'peanut'] });
+
+/* 꼭 먹어볼 요리. at은 그 요리를 파는 것으로 조사된 식당 id */
+const MUST = [
+  { d:'oyster', rank:'꼭', when:'언제든', why:'샤먼 대표 요리. 작은 굴에 계란과 고구마 전분을 섞어 부친 전이에요. 달짝한 소스를 찍어요.', tip:'순해서 부모님도 편하게 드세요.', at:['zx','lmm','xc','lhw','sxl'] },
+  { d:'sacha', rank:'꼭', when:'3일차 아침·점심', why:'땅콩과 새우로 만든 사차 소스 국물 면. 오징어, 굴, 어묵 같은 토핑을 골라 넣어요.', tip:'국물이 살짝 매우니 不辣로 주문하세요. 우탕은 오후 2시쯤 닫아요.', at:['wt','rj','lmm'] },
+  { d:'gmy', rank:'꼭', when:'저녁', why:'생강과 참기름으로 오리를 졸인 뚝배기 요리. 11월 저녁에 몸이 따뜻해져요.', tip:'생강 맛이 강해요. 한 냄비 시켜 나눠 드세요.', at:['qcj','px','lmm','hxs','mnd'] },
+  { d:'peanut', rank:'꼭', when:'1일차 중산루', why:'푹 끓여 부드러운 땅콩이 든 달콤한 국물. 샤먼 사람들의 간식이에요.', tip:'위완(생선 완자)과 같이 먹으면 좋아요.', at:['snk','nn'] },
+  { d:'zcr', rank:'추천', when:'1일차 저녁', why:'식초에 재웠다 튀긴 돼지고기. 새콤짭짤해서 밥반찬으로 좋아요.', tip:'맵지 않아 부모님 입맛에 무난해요.', at:['qcj','ljy'] },
+  { d:'fish', rank:'추천', when:'숙소 근처 저녁', why:'수조에서 고른 생선을 간장 소스로 찐 요리. 가장 실패 없는 해산물이에요.', tip:'주문 전에 1근(500g) 가격을 묻고, 무게 잴 때 사진을 남기세요.', at:['hyj','lmm','nsc','lsf'] },
+  { d:'zchl', rank:'추천', when:'숙소 근처·구랑위', why:'김과 굴로 끓인 맑은 뚝배기. 바지락 두부탕과 함께 순한 국물 요리예요.', tip:'굴전과 같이 시키면 한 상이 돼요.', at:['px','xc'] },
+  { d:'mxh', rank:'추천', when:'아침', why:'가는 국수를 걸쭉하게 끓인 죽. 샤먼 사람들이 아침에 먹어요.', tip:'튀긴 빵(油条)을 찍어 먹어요. 숙소 근처 아침 가게는 아직 조사 전이에요.', at:['xcg'] },
+  { d:'runbing', rank:'추천', when:'1일차·3일차', why:'채소, 고기, 땅콩가루를 얇은 전병에 싸 먹는 샤먼식 봄롤. 샤먼에선 薄饼이라고도 불러요.', tip:'박병이 대표인 Hey Ming(黑明餐厅, 白鹭洲 근처)은 아직 목록에 없어요.', at:[] },
+  { d:'hotpot', rank:'추천', when:'3일차 마지막 밤', why:'부위별 생 소고기를 맑은 국물에 살짝 담가 사차 소스에 찍어 먹어요.', tip:'소고기 완자와 무를 꼭 같이 넣으세요.', at:['bhl','rs'] },
+  { d:'ndf', rank:'추천', when:'2일차 토루 점심', why:'토루 지역 객가 요리. 두부에 고기소를 채워 졸여요. 매이차이 삼겹찜, 소금구이 닭도 많이 해요.', tip:'토루 식당 메뉴는 조사 전이라 현지 메뉴판을 보세요.', at:[] },
+  { d:'fotiao', rank:'특별', when:'특별한 한 끼', why:'전복, 해삼, 버섯 등을 오래 고은 고급 탕. 푸젠 대표 보양식이에요.', tip:'비싼 편이라 한 그릇씩 맛보기로 시키세요.', at:['chic'] },
+  { d:'tsd', rank:'도전', when:'궁금하면', why:'바다 벌레(별벌레)를 고아 굳힌 젤리. 샤먼 명물이지만 호불호가 아주 강해요.', tip:'한 접시만 시켜 맛보세요. 식초·간장·마늘 소스에 찍어요.', at:['mnd'] },
+];
 
 /* 바: 저녁 먹은 곳 근처. 좌표는 Ctrip 고덕 좌표를 WGS84로 변환한 정확한 값 */
 const BARS = [
@@ -946,7 +967,16 @@ function closePhoto(){ $('#photo').hidden = true; $('#photo').innerHTML = ''; }
 function foodView(){
   const fchips = RFILTERS.map(f => `<button class="chip rf" type="button" data-f="${f[0]}" aria-pressed="${f[0]==='all'}">${esc(f[1])}</button>`).join('');
   const dict = DICT.map(g => `<h3>${esc(g.h)}</h3><div class="chips">${g.items.map(dishChip).join('')}</div>`).join('');
-  return `<h2>맛집, 메뉴</h2><p class="lead">식당 후보와 샤먼에서 자주 먹는 음식이에요. 음식 이름을 누르면 사진을 볼 수 있어요.</p>
+  const must = MUST.map(m => {
+    const at = m.at.map(id => REST.find(r => r.id===id)).filter(Boolean)
+      .map(r => `<button class="lnk" type="button" data-showmap="r-${r.id}">${esc(r.ko.replace(/\s*\(.*?\)/g,''))}</button>`).join('');
+    return `<div class="rest must"><div class="top">${dishLink(m.d)}<span class="badge${m.rank==='도전'?' hot':''}">${esc(m.rank)}</span></div>
+      <p class="meta">${esc(m.when)}</p><p class="sig">${esc(m.why)}</p><p class="rn">${esc(m.tip)}</p>
+      ${at ? `<div class="acts">${at}</div>` : ''}</div>`;
+  }).join('');
+  return `<h2>꼭 먹어볼 요리</h2><p class="lead">샤먼에서 한 번씩은 먹어볼 만한 요리예요. 요리 이름을 누르면 사진이, 식당 이름을 누르면 지도가 열려요.</p>
+    ${must}
+    <h2 style="margin-top:28px">맛집, 메뉴</h2><p class="lead">식당 후보와 샤먼에서 자주 먹는 음식이에요. 음식 이름을 누르면 사진을 볼 수 있어요.</p>
     <div class="chips" id="restChips">${fchips}</div>
     <div id="restList">${REST.map(restCard).join('')}</div>
     <div class="box gap"><h4>해산물 식당 주문 팁</h4><ul>
