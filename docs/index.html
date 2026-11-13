@@ -170,6 +170,7 @@ h3{font-size:13px; letter-spacing:.06em; color:var(--muted); margin:26px 0 8px; 
 .plist .ko{font-size:13px; color:var(--muted)}
 .plist .zh{font-family:var(--f-han); font-size:18px; line-height:1.35; word-break:break-all}
 .plist .zh.small{font-size:15px}
+.plist .say{font-size:14px; font-weight:700; color:var(--accent)}
 .acts{display:flex; gap:6px; align-items:center; flex-wrap:wrap; justify-content:flex-end}
 .copy, .lnk{
   font:inherit; font-size:12px; font-weight:700; color:var(--accent); background:var(--soft);
@@ -481,6 +482,15 @@ const DICT = [
 const MODS = [
   ['nocil','고수 빼주세요','不要香菜'],['nospicy','맵지 않게','不要辣'],['light','담백하게','清淡一点'],
   ['hotw','뜨거운 물 주세요','请给热水'],['noice','얼음 빼고','不要冰'],
+];
+const FRUIT_TALK = [
+  ['얼마예요?','多少钱?','뚜어샤오 치엔?'],
+  ['한 근(500g)에 얼마예요?','一斤多少钱?','이 진 뚜어샤오 치엔?'],
+  ['하나만 살 수 있어요?','可以买一个吗?','커이 마이 이 거 마?'],
+  ['이거 주세요','我要这个','워 야오 쩌거'],
+  ['두 개요','两个','량 거'],
+  ['잘라 주세요','可以帮我切一下吗?','커이 빵 워 치에 이샤 마?'],
+  ['껍질 까 주세요 (유자처럼 두꺼운 껍질)','可以帮我剥一下吗?','커이 빵 워 빠오 이샤 마?'],
 ];
 const DISH = {}; DICT.forEach(g => g.items.forEach(i => DISH[i[0]] = {ko:i[1], zh:i[2], alt:i[3]}));
 
@@ -1119,7 +1129,10 @@ function foodView(){
     <h2 style="margin-top:28px">음식 사전</h2><p class="lead">샤먼에서 자주 보는 음식이에요. 누르면 사진 검색이 열려요. 식당마다 메뉴가 다르니 실제 주문은 메뉴판을 보고 하세요.</p>
     ${dict}
     <h3>식당에서 쓰는 한마디</h3>
-    <ul class="plist">${MODS.map(m=>`<li><div><div class="ko">${esc(m[1])}</div><div class="zh">${esc(m[2])}</div></div><div class="acts"><button class="copy" type="button" data-copy="${esc(m[2])}">복사</button></div></li>`).join('')}</ul>`;
+    <ul class="plist">${MODS.map(m=>`<li><div><div class="ko">${esc(m[1])}</div><div class="zh">${esc(m[2])}</div></div><div class="acts"><button class="copy" type="button" data-copy="${esc(m[2])}">복사</button></div></li>`).join('')}</ul>
+    <h3>과일 가게·시장에서 쓰는 한마디</h3>
+    <p class="lead">파란 글씨는 비슷하게 적은 한글 발음이에요. 안 통하면 중국어 글자를 보여주세요. 과일 값은 보통 한 근(斤, 500g) 기준이에요.</p>
+    <ul class="plist">${FRUIT_TALK.map(m=>`<li><div><div class="ko">${esc(m[0])}</div><div class="zh">${esc(m[1])}</div><div class="say">${esc(m[2])}</div></div><div class="acts"><button class="copy" type="button" data-copy="${esc(m[1])}">복사</button></div></li>`).join('')}</ul>`;
 }
 
 /* 주문서 기능은 뺐어요. 다른 곳에서 부르는 이름만 남겨 둠 */
