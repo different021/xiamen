@@ -330,7 +330,7 @@ const DAYS = [
 
 /* 좌표는 WGS84(GPS 기준). approx:1 은 주소만 알고 정확한 위치는 모르는 곳 */
 const PLACES = [
-  { id:'home', ko:'숙소 (Haixi Yue homestay)', zh:'福建省厦门市思明区黄厝路568号', days:[1,2,3,4], small:1, lat:24.4476, lng:118.1557, approx:1 },
+  { id:'home', ko:'숙소 (Haixi Yue homestay)', zh:'福建省厦门市思明区黄厝路568号', isAddr:1, days:[1,2,3,4], small:1, lat:24.4476, lng:118.1557, approx:1 },
   { id:'apt', ko:'공항', zh:'厦门高崎国际机场', days:[1,4], lat:24.5438, lng:118.1327 },
   { id:'zs', ko:'중산루 보행자거리', zh:'中山路步行街', days:[1], lat:24.4568, lng:118.0775 },
   { id:'ysy', ko:'윈수이야오 고진', zh:'云水谣古镇', days:[2], lat:24.6681, lng:117.0897 },
@@ -664,6 +664,30 @@ const SIGHTS = [
     tip:'숙소에서 북동쪽 해안길. 택시 5분쯤(추정)' },
 ];
 
+/* 디디에 붙여넣을 중국어 주소. where가 한국어인 곳은 직접 적고, 나머지는 where의 중국어 부분을 씀 */
+const ADDR = {
+  qcj:'厦门市思明区思明西路51-53号 南中广场2楼', mnd:'厦门市思明区环岛东路2188-16号', ljy:'厦门市思明区环岛南路308号', yy:'厦门市思明区嘉禾路21号',
+  hsl:'厦门市思明区鼓浪屿龙头路105号', sxl:'厦门市湖里区金边路566号', chic:'厦门市思明区环岛东路1705号 JFC品尚中心',
+  lsf:'厦门市思明区鼓浪屿鹿礁路11-19号 林氏府', npsc:'厦门市思明区思明南路515号 南普陀寺', xcg:'厦门市思明区环岛南路3999号 海悦山庄酒店',
+  bs:'厦门市思明区开禾路 第八市场', bsn:'厦门市思明区开禾路44号', sb:'厦门市思明区局口街', zca:'厦门市思明区环岛南路 曾厝垵', kscH:'厦门市思明区塔头路', zgsd:'厦门市思明区虎园路 钟鼓索道',
+  dq:'厦门市湖里区殿前五路', hlb:'厦门市湖里区兴隆路24号', yj:'', bm:'', hc:'',
+};
+function addrOf(id, where, zh){
+  let a = (id in ADDR) ? ADDR[id] : '';
+  if(!a && !(id in ADDR) && where){
+    const w = where.replace(/\([^)]*[가-힣][^)]*\)/g, '').trim();
+    const cut = w.search(/[가-힣]/);
+    a = (cut >= 0 ? w.slice(0, cut) : w).trim();
+    if(!/[号路]/.test(a)) a = '';
+    if(a && !a.includes('厦门')) a = '厦门市思明区' + a;
+  }
+  return a && a !== zh ? a : '';
+}
+function copyBtns(zh, addr){
+  return (zh ? `<button class="copy" type="button" data-copy="${esc(zh)}">이름 복사</button>` : '') +
+    (addr ? `<button class="copy" type="button" data-copy="${esc(addr)}">주소 복사</button>` : '');
+}
+
 /* 아침시장·야시장. 좌표는 대략(지도앱 Amap 버튼으로 정확한 위치 확인). nopin은 위치를 몰라 지도에 안 찍음 */
 const MARKETS = [
   { id:'bs', type:'아침', ko:'바스 (제8시장)', zh:'第八市场(八市)', days:[1,3], lat:24.4620, lng:118.0760, approx:1,
@@ -873,8 +897,10 @@ function navLinks(it){
   h += `<a class="lnk" href="${gNav}" target="_blank" rel="noopener">구글</a>`;
   if(it.r && it.r.link) h += `<a class="lnk" href="${it.r.link}" target="_blank" rel="noopener">${esc(it.r.linkLabel||'상세')}</a>`;
   if(it.b && it.b.link) h += `<a class="lnk" href="${it.b.link}" target="_blank" rel="noopener">${it.b.link.includes('michelin') ? '미쉐린 가이드' : 'Ctrip'}</a>`;
-  const cp = it.zh || (it.r && it.r.where) || (it.g && it.g.where);
-  if(cp) h += `<button class="copy" type="button" data-copy="${esc(cp)}">이름 복사</button>`;
+  const src = it.r || it.m || it.s || {};
+  const rid = it.id.slice(2);
+  const ad = it.kind==='home' ? it.zh : addrOf(rid, (it.g && it.g.where) || src.where, it.zh);
+  h += it.kind==='home' ? copyBtns('', ad) : copyBtns(it.zh, ad);
   return h;
 }
 function itemBody(it){
@@ -1028,7 +1054,8 @@ function focusItem(id){
 }
 
 function placeItem(p){
-  const acts = `<button class="copy" type="button" data-copy="${esc(p.zh)}">복사</button>` +
+  const ad = p.isAddr ? p.zh : addrOf(p.id, p.where, p.zh);
+  const acts = (p.isAddr ? `<button class="copy" type="button" data-copy="${esc(p.zh)}">주소 복사</button>` : copyBtns(p.zh, ad)) +
     `<a class="lnk" href="${amap(p.zh)}" target="_blank" rel="noopener">Amap</a>` +
     `<a class="lnk" href="${gmap(p.zh + ' 厦门')}" target="_blank" rel="noopener">구글</a>` +
     ((p.small || p.ko === '공항') ? '' : `<a class="lnk" href="${pic(p.ko.replace(/\(.*?\)/g,'').trim() + ' 샤먼')}" target="_blank" rel="noopener">사진</a>`);
@@ -1040,7 +1067,7 @@ function sightCard(x){
   return `<div class="rest"><div class="top"><h4>${esc(x.ko)}</h4><span class="price">${esc(x.price)}</span></div>
     <div class="zh">${esc(x.zh)}</div>
     <p class="meta">${x.badge?`<span class="badge">${esc(x.badge)}</span>`:''}${esc(x.hours)}</p>
-    <p class="sig">${esc(x.what)}</p><p class="rn">${esc(x.tip)}</p><div class="acts">${links}<button class="copy" type="button" data-copy="${esc(x.zh)}">이름 복사</button></div></div>`;
+    <p class="sig">${esc(x.what)}</p><p class="rn">${esc(x.tip)}</p><div class="acts">${links}${copyBtns(x.zh, addrOf(x.id, x.where, x.zh))}</div></div>`;
 }
 function mapView(){
   const colors = {1:'var(--d1)',2:'var(--d2)',3:'var(--d3)',4:'var(--d4)'};
@@ -1064,7 +1091,7 @@ function mapView(){
     <p class="lead">일정이 비거나 컨디션에 맞춰 바꿔 넣을 수 있는 곳이에요. 위치는 대략이라 갈 때는 Amap 버튼으로 찾으세요.</p>
     ${['숙소 근처','난푸퉈·샤먼대 쪽'].map(a => `<h4 style="margin:14px 0 0">${esc(a)}</h4>` + SIGHTS.filter(x => x.area===a).map(sightCard).join('')).join('')}
     <h3 id="plTitle">택시 목적지 (디디에 붙여넣기)</h3>
-    <p class="lead">"복사"를 누르고 디디 앱 목적지 칸에 붙여넣으세요. 위의 날짜를 누르면 그날 갈 곳만 보여요. 식당은 맛집 탭이나 지도 핀에서 복사해요.</p>
+    <p class="lead">"이름 복사"나 "주소 복사"를 누르고 디디 앱 목적지 칸에 붙여넣으세요. 이름으로 안 나오면 주소로 해 보세요. 위의 날짜를 누르면 그날 갈 곳만 보여요. 식당은 맛집 탭이나 지도 핀에서 복사해요.</p>
     <ul class="plist" id="placeList"></ul>
     <h3>한마디</h3>
     <ul class="plist">${PHRASES.map(p=>`<li><div><div class="ko">${esc(p[0])}</div><div class="zh">${esc(p[1])}</div></div><div class="acts"><button class="copy" type="button" data-copy="${esc(p[1])}">복사</button></div></li>`).join('')}</ul>`;
@@ -1083,14 +1110,13 @@ function restCard(r){
   const links = `<button class="lnk" type="button" data-showmap="r-${r.id}">지도에서 보기</button>` + (r.link ? `<a class="lnk" href="${r.link}" target="_blank" rel="noopener">${esc(r.linkLabel||'상세')}</a>` : '') + (r.zh ? `<a class="lnk" href="${amap(r.zh)}" target="_blank" rel="noopener">Amap</a>` : '') +
     `<a class="lnk" href="${gmap(q)}" target="_blank" rel="noopener">구글</a>` +
     (r.zh ? `<a class="lnk" href="${picCN(r.zh)}" target="_blank" rel="noopener">사진</a>` : '');
-  const cp = r.zh || r.where;
   return `<div class="rest" data-tags="${r.tags.join(' ')}">
     <div class="top"><h4>${esc(r.ko)}</h4>${r.price?`<span class="price">${esc(r.price)}</span>`:''}</div>
     ${r.zh?`<div class="zh">${esc(r.zh)}</div>`:''}
     <p class="meta">${r.badge?`<span class="badge ${r.hot?'hot':''}">${esc(r.badge)}</span>`:''}${esc(r.where)} · ${esc(r.area)}</p>
     <p class="sig"><b>대표</b> ${esc(r.sig)}</p>
     <p class="rn">${esc(r.rn)}</p>
-    <div class="acts">${links}<button class="copy" type="button" data-copy="${esc(cp)}">이름 복사</button></div></div>`;
+    <div class="acts">${links}${copyBtns(r.zh, addrOf(r.id, (RGEO[r.id] && RGEO[r.id].where) || r.where, r.zh))}</div></div>`;
 }
 /* 메뉴를 누르면 그 음식 사진 검색이 새 탭으로 열려요 (중국어 이름으로 검색해야 정확) */
 /* 음식 사진: 위키미디어 공용의 자유 이용 사진만 사용 (출처·라이선스 표시). 없는 음식은 사진 없이 이름만 크게 보여줌 */
@@ -1168,7 +1194,7 @@ function marketCard(m){
   return `<div class="rest"><div class="top"><h4>${esc(m.ko)}</h4><span class="badge${m.type==='야시장'?' hot':''}">${esc(m.type==='아침'?'아침시장':'야시장')}</span></div>
     <div class="zh">${esc(m.zh)}</div>
     <p class="meta">${m.badge?`<span class="badge">${esc(m.badge)}</span>`:''}${esc(m.where)} · ${esc(m.hours)}</p>
-    <p class="sig"><b>먹을 것</b> ${esc(m.eat)}</p><p class="rn">${esc(m.note)}</p><div class="acts">${links}<button class="copy" type="button" data-copy="${esc(m.zh)}">이름 복사</button></div></div>`;
+    <p class="sig"><b>먹을 것</b> ${esc(m.eat)}</p><p class="rn">${esc(m.note)}</p><div class="acts">${links}${copyBtns(m.zh, addrOf(m.id, m.where, m.zh))}</div></div>`;
 }
 function foodView(){
   const fchips = RFILTERS.map(f => `<button class="chip rf" type="button" data-f="${f[0]}" aria-pressed="${f[0]==='all'}">${esc(f[1])}</button>`).join('');
