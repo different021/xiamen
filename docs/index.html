@@ -8,9 +8,16 @@
 <style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Do+Hyeon&family=Noto+Sans+KR:wght@400;500;700&family=Noto+Sans+SC:wght@400;500;700&display=swap">
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<!-- 구글 폰트는 중국에서 막혀요. media=print로 받아서 렌더링을 막지 않게 하고, 실패하면 기본 글꼴로 보여요 -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Do+Hyeon&family=Noto+Sans+KR:wght@400;500;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" media="print" onload="this.media='all'">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<meta name="theme-color" content="#0B6E7B">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="샤먼 여행">
+<link rel="stylesheet" href="vendor/leaflet/leaflet.css">
+<script src="vendor/leaflet/leaflet.js"></script>
 <style>
 /* Layout: 한 손으로 넘겨 보는 7개 탭(1~4일, 지도, 맛집, 준비). 지도 탭은 실제 지도(Amap 타일) + 현재 위치 + 가까운 순 리스트, 맛집은 메뉴 사전에서 골라 중국어 주문서를 만드는 구조. */
 :root{
@@ -94,6 +101,7 @@ h3{font-size:13px; letter-spacing:.06em; color:var(--muted); margin:26px 0 8px; 
 .box.alert{border-color:var(--warn); background:var(--warn-bg)}
 .box h4{margin:0 0 4px; font-size:14px}
 .box p{margin:0; font-size:14px}
+.box p + p{margin-top:6px}
 .box ul{margin:4px 0 0; padding-left:18px; font-size:14px}
 .gap{margin-top:16px}
 
@@ -797,6 +805,7 @@ const CHECKS = [
     ['p4','알리페이 또는 위챗페이에 해외 카드 연동'],
     ['p5','로밍 또는 eSIM (지도, 디디, 위챗용)'],
     ['p6','지도앱(Amap/바이두), 디디, 번역앱 설치'],
+    ['p9','이 페이지를 4명 모두 한국에서 한 번 열고 홈 화면에 추가'],
     ['p7','소액 위안화 현금'],
     ['p8','부모님 상비약, 복용 중인 약'],
   ]},
@@ -1245,7 +1254,7 @@ function prepView(){
   const cost = `<h3>비용 (4인, 위안)</h3><div class="tablewrap"><table><thead><tr><th>항목</th><th class="r">1인</th><th class="r">4인</th><th>비고</th></tr></thead><tbody>${
     COSTS.map(c=>`<tr><td>${esc(c[0])}</td><td class="r">¥${c[1]}</td><td class="r">¥${c[1]*4}</td><td class="m">${esc(c[2])}</td></tr>`).join('')
   }<tr><td>토루 차량/투어</td><td class="r">-</td><td class="r">-</td><td class="m">문의 후 기입</td></tr><tr><td>난푸퉈사</td><td class="r">무료로 알려짐</td><td class="r">-</td><td class="m">확인 필요</td></tr></tbody></table></div>`;
-  return `<h2>준비</h2><p class="lead">체크 표시는 이 기기에만 저장돼요.</p>${book}${lists}${cost}`;
+  return `<h2>준비</h2><p class="lead">체크 표시는 이 기기에만 저장돼요.</p><div class="box gap alert"><h4>출발 전에 꼭: 이 페이지를 폰에 저장</h4><p>중국 와이파이에서는 이 페이지가 안 열릴 수 있어요. 한국에서 한 번 열어두면 폰에 저장돼서 인터넷 없이도 일정, 맛집, 한마디, 사진을 볼 수 있어요. 지도와 길찾기는 인터넷이 필요해요.</p><p>아이폰은 사파리 공유 버튼에서 <b>홈 화면에 추가</b>, 안드로이드는 크롬 메뉴(⋮)에서 <b>홈 화면에 추가</b>를 눌러요.</p><p id="offline-state" style="margin-top:6px;color:var(--muted)"></p></div>${book}${lists}${cost}`;
 }
 
 /* ---------- 조립 ---------- */
@@ -1332,6 +1341,19 @@ async function doCopy(text, btn){
   setTimeout(() => { btn.textContent = old; }, 1400);
 }
 syncChips();
+
+/* ---------- 오프라인 저장 (서비스 워커) ---------- */
+function setOfflineState(t){ const el = document.getElementById('offline-state'); if (el) el.textContent = t; }
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').then(reg => navigator.serviceWorker.ready).then(() => {
+    setOfflineState('✓ 이 기기에 저장됐어요. 인터넷이 없어도 열려요.');
+  }).catch(() => setOfflineState('이 브라우저에서는 오프라인 저장이 안 돼요. 주요 화면을 캡처해 두세요.'));
+  navigator.serviceWorker.addEventListener('message', e => {
+    if (e.data === 'cached') setOfflineState('✓ 이 기기에 저장됐어요. 인터넷이 없어도 열려요.');
+  });
+} else {
+  setOfflineState('이 브라우저에서는 오프라인 저장이 안 돼요. 주요 화면을 캡처해 두세요.');
+}
 </script>
 
 </body></html>
