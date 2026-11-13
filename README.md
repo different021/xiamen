@@ -29,6 +29,7 @@
 - [docs/index.html](docs/index.html): 여행 중 폰으로 보는 페이지 (GitHub Pages)
 - [food.md](food.md): 식당 후보, 메뉴 사전
 - [places.md](places.md): 장소별 중국어 이름, 택시/지도앱에 보여주기용
+- [massage.md](massage.md): 마사지·발마사지 후보, 주의할 점, 마사지 한마디
 - [checklist.md](checklist.md): 예약, 준비물
 - [budget.md](budget.md): 입장료 등 비용
 

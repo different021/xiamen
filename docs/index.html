@@ -143,7 +143,7 @@ h3{font-size:13px; letter-spacing:.06em; color:var(--muted); margin:26px 0 8px; 
 /* 핀: 흰 동그라미 + 색 테두리 + 그림 아이콘, 아래 꼬리. 회전 없이 가운데 정렬. 지도 위라 테마와 무관하게 고정색 */
 .pin{--c:#D2412C; position:relative; width:32px; height:32px; border-radius:50%; background:#fff; border:3px solid var(--c); box-shadow:0 2px 6px rgba(0,0,0,.35); display:flex; align-items:center; justify-content:center; font-size:17px; line-height:1}
 .pin::after{content:""; position:absolute; left:50%; bottom:-9px; transform:translateX(-50%); border:6px solid transparent; border-top:7px solid var(--c); border-bottom:0}
-.pin.p-rest{--c:#D2412C} .pin.p-place{--c:#0B7F8C} .pin.p-bar{--c:#B5651D} .pin.p-market{--c:#2E7D32} .pin.p-sight{--c:#C2185B} .pin.p-home{--c:#6A4FD0; width:40px; height:40px; font-size:21px}
+.pin.p-rest{--c:#D2412C} .pin.p-place{--c:#0B7F8C} .pin.p-bar{--c:#B5651D} .pin.p-market{--c:#2E7D32} .pin.p-sight{--c:#C2185B} .pin.p-massage{--c:#1565C0} .pin.p-home{--c:#6A4FD0; width:40px; height:40px; font-size:21px}
 .pin.approx{border-style:dashed}
 .plabel.leaflet-tooltip{display:none; background:rgba(255,255,255,.92); color:#13262B; border:0; box-shadow:0 1px 3px rgba(0,0,0,.3); font:700 11px/1.3 var(--f-body); padding:1px 6px; border-radius:6px}
 .plabel.leaflet-tooltip::before{display:none}
@@ -167,7 +167,7 @@ h3{font-size:13px; letter-spacing:.06em; color:var(--muted); margin:26px 0 8px; 
 .nlist li{background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:12px 14px}
 .nlist .top{display:flex; justify-content:space-between; gap:10px; align-items:baseline}
 .kind{display:inline-block; font-size:11px; font-weight:700; border-radius:999px; padding:1px 7px; margin-right:4px; vertical-align:1px}
-.kind.k-rest{background:var(--warn-bg); color:var(--warn)} .kind.k-bar{background:#F6E7D6; color:#8A4A12} .kind.k-place{background:var(--soft); color:var(--accent)} .kind.k-market{background:#E3F1E4; color:#2E6B31} .kind.k-sight{background:#F8E1EA; color:#9C1449}
+.kind.k-rest{background:var(--warn-bg); color:var(--warn)} .kind.k-bar{background:#F6E7D6; color:#8A4A12} .kind.k-place{background:var(--soft); color:var(--accent)} .kind.k-market{background:#E3F1E4; color:#2E6B31} .kind.k-sight{background:#F8E1EA; color:#9C1449} .kind.k-massage{background:#E1ECF8; color:#1A4F8F}
 .nlist .acts{justify-content:flex-start; margin-top:8px}
 .basepick{display:flex; flex-wrap:wrap; gap:6px; align-items:center; font-size:13px; color:var(--muted); margin-top:10px}
 .mapnote{font-size:12px; color:var(--muted); margin:8px 2px 0}
@@ -286,7 +286,8 @@ const DAYS = [
       ['17:15','중산루 보행자거리 (中山路)','치러우(아케이드) 건축을 보며 가볍게 산책. 평지'],
       ['18:00','저녁','맛집 탭에서 고르기. 토요일 저녁 6~8시는 대기 30분쯤이라, 길면 식사 후에 산책'],
       ['19:30','땅콩탕, 위완 같은 간식','중산루 안. 바로 옆 바스 야시장(开禾路)도 구경 가능'],
-      ['20:00','택시로 숙소 복귀','대략 30~40분'],
+      ['20:00','발마사지 (선택)','중산루 안 영화관식 족욕(悦馨 등), 60분. 맛집 탭 "마사지"에서 고르기. 시작 전 4인 합계 가격 확인','opt'],
+      ['21:15','택시로 숙소 복귀','마사지를 안 하면 20:00. 대략 30~40분'],
     ],
     after:{h:'도착 전에', items:['알리페이 또는 위챗페이, 지도앱(Amap), 디디 설치','숙소 근처 편의점, 마트 위치 확인']}
   },
@@ -300,8 +301,9 @@ const DAYS = [
       ['14:00','허컹 토루군 (河坑土楼群)','입구에서 약 15분 걷기. 토루 안을 구경하고 차 한 잔'],
       ['15:00','샤먼으로 출발','편도 약 3시간'],
       ['18:00','스위스 그랜드 호텔 도착, 투어 종료',''],
-      ['18:15','저녁','호텔이 중산루 바로 옆이라 근처에서 먹고 들어가기 좋아요. 1일차에 안 간 중산루 식당이나 바스 야시장'],
-      ['20:00','택시로 숙소 복귀','대략 30~40분'],
+      ['18:15','저녁+발마사지 (선택)','手佳 华侨海景店(쇼우지아). 택시 5~8분, 뷔페 포함이라 저녁까지 해결. 일요일이라 전화(0592-2028988)로 4인 예약','opt'],
+      ['18:15','저녁 (마사지 안 갈 때)','호텔이 중산루 바로 옆이라 근처에서 먹고 들어가기 좋아요. 1일차에 안 간 중산루 식당이나 바스 야시장'],
+      ['20:00','택시로 숙소 복귀','대략 30~40분. 手佳에 갔으면 21:30쯤'],
     ],
     box:{cls:'alert', h:'토루 투어 확인할 것', lines:['집합·복귀: 스위스 그랜드 샤먼 (厦门瑞颐大酒店, 思明区鹭江道12号, 전화 0592-6366666). 9:30 출발, 18:00 복귀','점심 포함 여부','기사·가이드 연락처(위챗 또는 전화) 받아 두기','티엔뤄컹(田螺坑)은 전망대 오르막이 있어 선택']},
     after:{h:'플랜 B (비 오거나 컨디션이 안 좋을 때)', items:['숙소 주변 해안 산책: 황춰 해변, 서법광장 데크길, 예펑자이 (지도 탭 "가볼 만한 곳")','쩡춰안(曾厝垵) 먹자골목. 17~21시가 가장 붐벼요','시내 쪽: 중고 케이블카 + 만석식물원, 사포웨이 + 바이청 해변']}
@@ -309,7 +311,7 @@ const DAYS = [
   { id:'day3', n:'3일', date:'11/16 월', title:'구랑위', lead:'이번 여행의 하이라이트. 11:10 배로 들어가요. 월요일이라 주말보다 한산해요. 전부 도보라 천천히.',
     rows:[
       ['08:30','택시/디디로 바스(八市) 이동','대략 30~40분. 开禾路 입구에서 내리기'],
-      ['09:15','바스 아침시장 구경, 아침','사차면, 땅콩탕, 샤오룽바오 등. 맛집 탭 "아침시장"에 가게 정리. 호객하는 해산물 가게는 피하기'],
+      ['09:15','바스 아침시장 구경, 아침','사차면, 땅콩탕, 샤오룽바오 등. 맛집 탭 "아침시장"에 가게 정리. 호객하는 해산물 가게는 피하기. 어깨·목 30분은 太乙理疗室(大同路, 8시 영업) 선택, 페리 때문에 빠듯'],
       ['10:30','택시로 동도 페리 터미널 이동','东渡 국제크루즈센터 안 샤구 부두(厦鼓码头). 10~15분. 출발 30분 전 도착. 여권 지참'],
       ['11:10','동도에서 페리 출발 (구랑위행)','20분쯤. 도착 부두(싼치우톈 또는 네이춰아오)는 표에서 확인','book'],
       ['11:30','구랑위 도착, 점심','도착 부두가 싼치우톈이면 린씨 저택 식당이 걸어서 5분(점심 11:30~14:00). 섬 가운데 골목 식당도 좋아요'],
@@ -319,10 +321,11 @@ const DAYS = [
       ['15:45','일광암 (日光岩)','돌계단 15~20분 오르막, ¥60. 힘들면 건너뛰기','opt'],
       ['17:00','페리 복귀','대부분 명소는 17:00 폐장. 돌아오는 배 시간은 예약에서 확인'],
       ['18:00','저녁 (마지막 밤)','훠궈 계열이나 푸젠 요리. 맛집 탭에서 고르기'],
-      ['20:00','숙소 복귀',''],
+      ['19:30','발마사지 (선택)','숙소 쪽. 컨벤션호텔 天心阁 족욕(영업 여부 전화 확인) 또는 大众点评에서 "附近 足疗" 검색','opt'],
+      ['21:00','숙소 복귀','마사지를 안 하면 20:00'],
     ],
     box:{cls:'', h:'난푸퉈사를 넣고 싶다면', lines:['바스 대신 아침에 난푸퉈사(南普陀寺)를 1시간쯤 보고 페리 터미널로 가요','11:10 배라 오전 시간이 넉넉해요','예약 필요 여부는 출발 전에 확인']},
-    after:{h:'구랑위 팁', items:['섬에 차량이 없어요. 골목은 좁고 언덕, 남쪽 해안길은 평지','페리는 샤구 페리 앱, 위챗 미니프로그램, 현장, 클룩 등에서 예약','도착 부두는 보통 싼치우톈(三丘田). 돌아오는 부두는 예약 시 확인']}
+    after:{h:'구랑위 팁', items:['섬에 차량이 없어요. 골목은 좁고 언덕, 남쪽 해안길은 평지','페리는 샤구 페리 앱, 위챗 미니프로그램, 현장, 클룩 등에서 예약','도착 부두는 보통 싼치우톈(三丘田). 돌아오는 부두는 예약 시 확인','섬 안 마사지는 찾지 못했어요. 쉬는 건 카페에서']}
   },
   { id:'day4', n:'4일', date:'11/17 화', title:'귀국', lead:'비행기 13:40. 공항에는 11:00까지 도착하는 걸 목표로.',
     rows:[
@@ -524,6 +527,17 @@ const FRUIT_TALK = [
   ['잘라 주세요','可以帮我切一下吗?','커이 빵 워 치에 이샤 마?'],
   ['껍질 까 주세요 (유자처럼 두꺼운 껍질)','可以帮我剥一下吗?','커이 빵 워 빠오 이샤 마?'],
 ];
+const MASSAGE_TALK = [
+  ['살살 해 주세요','轻一点','칭 이디엔'],
+  ['세게 해 주세요','重一点','중 이디엔'],
+  ['딱 좋아요','刚好','깡하오'],
+  ['여기 아파요','这里疼','쩌리 텅'],
+  ['고혈압이 있어요','我有高血压','워 여우 까오쉬에야'],
+  ['괄사·부항 하지 마세요','不要刮痧拔罐','부야오 꽈샤 바관'],
+  ['넷이 같이 받아요. 4인실 있어요?','我们四个人一起,有四人间吗?','워먼 쓰 거 런 이치, 여우 쓰런지엔 마?'],
+  ['4명 합계 얼마예요?','四个人一共多少钱?','쓰 거 런 이꽁 뚜어샤오 치엔?'],
+  ['괜찮아요 (추가 권유 거절)','不用了,谢谢','부용 러, 씨에씨에'],
+];
 /* 한마디 시트(오른쪽 아래 버튼). [한국어, 중국어, 한글 발음] */
 const TALK = [
   { h:'택시', items:[
@@ -544,6 +558,7 @@ const TALK = [
     ['포장해 주세요','打包','다빠오'],
   ]},
   { h:'과일·시장', items: FRUIT_TALK },
+  { h:'마사지', items: MASSAGE_TALK },
   { h:'기본', items:[
     ['화장실이 어디예요?','洗手间在哪里?','시서우지엔 짜이 날리?'],
     ['알리페이 돼요?','可以用支付宝吗?','커이 융 즈푸바오 마?'],
@@ -791,6 +806,49 @@ const BARS = [
     hours:'18:00~02:00', type:'수제맥주 탭룸', drinks:'수제맥주 6종 샘플러, 달콤한 사과 사이다, 스타우트', vibe:'대화하기 좋은 조명, 가끔 가수. 실내, 바다 전망 없음 (2026년 후기)', parents:'괜찮아요', link:CT(152067972) },
 ];
 
+/* 마사지·발마사지 (11/14 조사). 좌표는 WGS84. 중산루 쪽은 조사한 WGS84 값 그대로,
+   approx:1 은 고덕(GCJ-02) 추정 좌표를 WGS84로 되돌린 값이라 대략이에요.
+   大众点评은 조사 때 열 수 없었고 바이두 지도 후기도 1~3건 수준이라 전부 현지 확인 필요.
+   지도에서는 '전체'에 안 나오고 종류 필터 '마사지'를 눌러야 보여요. */
+const MASSAGE = [
+  { id:'yx', area:'중산루 일대', ko:'위에신 영화관식 족욕 (중산루점)', zh:'悦馨肩颈·影院足浴SPA(中山路店)', days:[1,2], lat:24.456000, lng:118.074352,
+    where:'定安路69-101号 (중산루 보행자거리 안)', addr:'厦门市思明区定安路69-101号', hours:'10:00~03:00', price:'1인 ¥160쯤',
+    what:'리클라이너에 누워 영화 보며 받는 족욕. 바이두 지도 4.1 (후기 1건)',
+    tip:'4명이 한 방(4인실)에 들어갈 수 있는지 먼저 물어보세요. 1일차 저녁 뒤 60분이 좋아요', badge:'1일차 추천' },
+  { id:'jh', area:'중산루 일대', ko:'쥔하오 영화관식 족도 (중산루점)', zh:'君豪·影院足道·轻奢SPA(中山路店)', days:[1,2], lat:24.456690, lng:118.073186,
+    where:'中山路步行街81-1号 (안타(安踏) 매장 맞은편)', addr:'厦门市思明区中山路步行街81-1号', hours:'영업시간 확인 필요', price:'1인 ¥148쯤', tel:'18259236683',
+    what:'영화관식 족욕·마사지', tip:'위에신이 꽉 찼을 때 대안' },
+  { id:'yt', area:'중산루 일대', ko:'야타이 영화관식 족도 (중산루점)', zh:'雅泰·影院式足道SPA(中山路店)', days:[1,2], lat:24.457134, lng:118.070077,
+    where:'升平路44-102号', addr:'厦门市思明区升平路44-102号', hours:'영업시간 확인 필요', price:'1인 ¥119쯤', tel:'15137639513',
+    what:'영화관식 족욕·마사지', tip:'중산루 서쪽 골목. 영화관식 세 곳 중 가장 저렴해요' },
+  { id:'zyy', area:'중산루 일대', ko:'정위안위안 발관리 (딩안루점)', zh:'郑远元专业修脚房(厦门定安路店)', days:[1,2], lat:24.456033, lng:118.075249,
+    where:'定安路36号-102', addr:'厦门市思明区定安路36号-102', hours:'10:30~23:30', price:'1인 ¥75쯤', tel:'18891553340',
+    what:'전국 체인 발관리점. 족욕+발관리+어깨·목 묶음이 1인 ¥75쯤',
+    tip:'작고 소박한 매장이라 4명이 한 번에 받기 어려울 수 있어요' },
+  { id:'ayana', area:'중산루 일대', ko:'아야나 스파 (스위스 그랜드 호텔 2층)', zh:'阿雅娜 AYANA SPA(瑞颐大酒店2楼201室)', days:[1,2], lat:24.452630, lng:118.074329,
+    where:'鹭江道12号 瑞颐大酒店2楼201室', addr:'厦门市思明区鹭江道12号 瑞颐大酒店2楼201室', hours:'영업시간 확인 필요', price:'1인 ¥515쯤', tel:'0592-6366666',
+    what:'토루 투어 집합·복귀 장소인 스위스 그랜드 호텔 안 스파', tip:'동선은 가장 편하지만 비싸요', badge:'호텔 스파' },
+  { id:'sj', area:'중산루 일대', ko:'쇼우지아 건강회관 (화교해경점)', zh:'手佳·健康会所(华侨海景店)', days:[2,3], lat:24.465981, lng:118.072542,
+    where:'禾祥西二路 华侨海景城 雅加达楼2楼', addr:'厦门市思明区禾祥西二路华侨海景城雅加达楼2楼', hours:'24시간', price:'¥248~ (오일 90분 ¥348)', tel:'0592-2028988',
+    link:'https://www.trip.com/things-to-do/detail/109821268/', linkLabel:'Trip.com (지점 미명시)',
+    what:'샤먼 로컬 대형 체인. 뷔페·사우나·샤워 포함 (가격은 2024~2026 대만 블로그 기준). 조사한 곳 중 근거가 가장 탄탄해요',
+    tip:'2일차 투어가 18:00 스위스 그랜드 호텔에서 끝나면 택시 5~8분. 저녁 뷔페와 발마사지를 한 번에. 일요일이라 전화로 4인 예약하세요', badge:'2일차 추천' },
+  { id:'ty', area:'중산루 일대', ko:'타이이 이료실 (다퉁루점)', zh:'太乙理疗室(大同路店)', days:[3], lat:24.459078, lng:118.073036,
+    where:'大同路178号一楼', addr:'厦门市思明区大同路178号一楼', hours:'08:00~22:00 (근처에서 유일하게 아침 영업)', price:'1인 ¥60쯤', tel:'18350267683',
+    what:'理疗·추나 위주의 작은 가게. 바이두 지도 4.6',
+    tip:'3일차 아침 바스 시장 뒤 어깨·목 30분만 받는 선택지. 11:10 페리 때문에 빠듯하니 무리하지 마세요', badge:'3일차 아침' },
+  { id:'txg', area:'숙소 쪽 (컨벤션센터·쩡춰안)', ko:'컨벤션호텔 톈신거 족욕장', zh:'厦门国际会展酒店 天心阁健康俱乐部', days:[2,3], lat:24.469187, lng:118.179838, approx:1,
+    where:'会展二路199号 厦门国际会展酒店', addr:'厦门市思明区会展二路199号 厦门国际会展酒店', hours:'영업 여부 확인 필요', price:'확인 필요', tel:'0592-5959999',
+    what:'호텔 안 대형 족욕장. 바이두백과에 "샤먼 최대 족욕장"으로 나오지만 오래된 정보예요',
+    tip:'호텔에 전화해서 "天心阁足浴还营业吗?" (톈신거 족욕 아직 하나요?) 하고 먼저 확인하세요', badge:'영업 확인' },
+  { id:'yun', area:'숙소 쪽 (컨벤션센터·쩡춰안)', ko:'윈 스파 (쩡춰안)', zh:'云YUN SPA', days:[1,2,3], lat:24.431629, lng:118.120013, approx:1,
+    where:'曾厝垵社505号', addr:'厦门市思明区曾厝垵社505号', hours:'확인 필요', price:'확인 필요', tel:'15980375190',
+    what:'360 지도에만 나오는 작은 가게. 후기 없음', tip:'쩡춰안 저녁 뒤 들르기용. 관광지라 시작 전에 가격을 꼭 확인하세요' },
+  { id:'zbc', area:'숙소 쪽 (컨벤션센터·쩡춰안)', ko:'쩡부춰 족욕 (쩡춰안)', zh:'曾不厝足浴', days:[1,2,3], lat:24.429476, lng:118.119740, approx:1,
+    where:'曾厝垵社89-4号', addr:'厦门市思明区曾厝垵社89-4号', hours:'확인 필요', price:'확인 필요',
+    what:'360 지도에만 나오는 작은 가게. 후기 없음', tip:'쩡춰안 저녁 뒤 들르기용. 관광지라 시작 전에 가격을 꼭 확인하세요' },
+];
+
 const BOOKINGS = [
   ['토루 투어 (11/15)','9:30 스위스 그랜드 호텔 집합, 18:00 복귀. 점심 포함 여부와 기사 연락처 확인','확정'],
   ['구랑위 페리 (11/16)','11:10 출발. 출발 부두와 돌아오는 배 시간 확인','확정'],
@@ -888,12 +946,13 @@ const ITEMS = [
   ...BARS.map(b => ({ id:'b-'+b.id, kind:'bar', ko:b.ko, zh:b.zh, days:b.days, lat:b.lat, lng:b.lng, b })),
   ...SIGHTS.filter(x => !x.nopin).map(x => ({ id:'s-'+x.id, kind:'sight', ko:x.ko, zh:x.zh, days:x.days, lat:x.lat, lng:x.lng, approx:x.approx, s:x })),
   ...MARKETS.filter(m => !m.nopin).map(m => ({ id:'m-'+m.id, kind:'market', ko:m.ko, zh:m.zh, days:m.days, lat:m.lat, lng:m.lng, approx:m.approx, m })),
+  ...MASSAGE.map(x => ({ id:'x-'+x.id, kind:'massage', ko:x.ko, zh:x.zh, days:x.days, lat:x.lat, lng:x.lng, approx:x.approx, x })),
 ];
 const BASES = [['p-home','숙소'],['p-zs','중산루'],['p-ltl','구랑위']];
 const MS = { day:'all', kind:'all', mode:'map', base:'p-home', me:null, watch:null };
 
 function visibleItems(){
-  return ITEMS.filter(it => it.kind==='home' || ((MS.kind==='all' || MS.kind===it.kind) && (MS.day==='all' || it.days.includes(Number(MS.day)))));
+  return ITEMS.filter(it => it.kind==='home' || ((MS.kind==='all' ? it.kind!=='massage' : MS.kind===it.kind) && (MS.day==='all' || it.days.includes(Number(MS.day)))));
 }
 function origin(){ return MS.me || ITEMS.find(i => i.id===MS.base); }
 function distLabel(it){
@@ -909,16 +968,19 @@ function navLinks(it){
     : `<a class="lnk" href="${amapNav}" target="_blank" rel="noopener">Amap</a>`;
   h += `<a class="lnk" href="${gNav}" target="_blank" rel="noopener">구글</a>`;
   if(it.r && it.r.link) h += `<a class="lnk" href="${it.r.link}" target="_blank" rel="noopener">${esc(it.r.linkLabel||'상세')}</a>`;
+  if(it.x && it.x.link) h += `<a class="lnk" href="${it.x.link}" target="_blank" rel="noopener">${esc(it.x.linkLabel||'상세')}</a>`;
+  if(it.x && it.x.tel) h += `<a class="lnk" href="tel:${it.x.tel.replace(/-/g,'')}">전화</a>`;
   if(it.b && it.b.link) h += `<a class="lnk" href="${it.b.link}" target="_blank" rel="noopener">${it.b.link.includes('michelin') ? '미쉐린 가이드' : 'Ctrip'}</a>`;
   const src = it.r || it.m || it.s || {};
   const rid = it.id.slice(2);
-  const ad = it.kind==='home' ? it.zh : addrOf(rid, (it.g && it.g.where) || src.where, it.zh);
+  const ad = it.kind==='home' ? it.zh : it.x ? it.x.addr : addrOf(rid, (it.g && it.g.where) || src.where, it.zh);
   h += it.kind==='home' ? copyBtns('', ad) : copyBtns(it.zh, ad);
   return h;
 }
 function itemBody(it){
   const kindLbl = it.kind==='rest' ? '<span class="kind k-rest">식당</span>' : it.kind==='bar' ? '<span class="kind k-bar">바</span>'
     : it.kind==='sight' ? '<span class="kind k-sight">볼거리</span>'
+    : it.kind==='massage' ? '<span class="kind k-massage">마사지</span>'
     : it.kind==='market' ? `<span class="kind k-market">${esc(it.m.type==='아침'?'아침시장':'야시장')}</span>`
     : '<span class="kind k-place">' + (it.kind==='home'?'숙소':'장소') + '</span>';
   let meta = kindLbl;
@@ -926,12 +988,14 @@ function itemBody(it){
   else if(it.b){ meta += esc([it.b.price, it.b.near + ' 근처', it.b.hours].join(' · ')); }
   else if(it.m){ meta += esc(it.m.hours); }
   else if(it.s){ meta += esc([it.s.price, it.s.hours].join(' · ')); }
+  else if(it.x){ meta += esc([it.x.price, it.x.hours].join(' · ')); }
   else meta += esc(it.days.map(d => d+'일차').join(', '));
   if(it.approx) meta += ` <span class="approxnote">위치 대략</span>`;
   const dishes = it.g && it.g.dishes.length ? `<p class="meta">대표 메뉴 (후기 기준) · 📷 표시는 누르면 사진</p><div class="chips">${it.g.dishes.map(dishLink).join('')}</div>` : '';
   const sig = it.r ? `<p class="meta" style="color:var(--ink)">${esc(it.r.sig)}</p>`
     : it.s ? `<p class="meta" style="color:var(--ink)">${esc(it.s.what)}</p><p class="meta">${esc(it.s.tip)}</p>`
     : it.m ? `<p class="meta" style="color:var(--ink)">${esc(it.m.eat)}</p><p class="meta">${esc(it.m.note)}</p>`
+    : it.x ? `<p class="meta" style="color:var(--ink)">${esc(it.x.what)}</p><p class="meta">${esc(it.x.tip)} · 현지 확인 필요</p>`
     : it.b ? `<p class="meta" style="color:var(--ink)">${esc(it.b.type)} · ${esc(it.b.drinks)}</p><p class="meta">${esc(it.b.vibe)} · 부모님과: ${esc(it.b.parents)}</p>` : '';
   return `<div class="top"><h4>${esc(it.ko)}</h4><span class="dist">${esc(distLabel(it))}</span></div>
     ${it.zh ? `<div class="zh">${esc(it.zh)}</div>` : ''}
@@ -950,6 +1014,7 @@ const ICON = {
   bar:'<span aria-hidden="true">🍸</span>',
   market:'<span aria-hidden="true">🏮</span>',
   sight:'<span aria-hidden="true">📸</span>',
+  massage:'<span aria-hidden="true">💆</span>',
 };
 const proj = (lat, lng) => curBase==='amap' ? wgs2gcj(lat, lng) : [lat, lng];
 function mstatus(t, warn){ const el = $('#mstatus'); if(!el) return; el.textContent = t; el.classList.toggle('warn', !!warn); }
@@ -975,7 +1040,7 @@ function initMap(){
   const legend = L.control({ position:'bottomleft' });
   legend.onAdd = () => {
     const d = L.DomUtil.create('div', 'mlegend');
-    d.innerHTML = `<span><i style="border-color:#D2412C">${ICON.rest}</i>식당</span><span><i style="border-color:#0B7F8C">${ICON.place}</i>장소</span><span><i style="border-color:#B5651D">${ICON.bar}</i>바</span><span><i style="border-color:#2E7D32">${ICON.market}</i>시장</span><span><i style="border-color:#C2185B">${ICON.sight}</i>볼거리</span><span><i style="border-color:#6A4FD0">${ICON.home}</i>숙소</span>`;
+    d.innerHTML = `<span><i style="border-color:#D2412C">${ICON.rest}</i>식당</span><span><i style="border-color:#0B7F8C">${ICON.place}</i>장소</span><span><i style="border-color:#B5651D">${ICON.bar}</i>바</span><span><i style="border-color:#2E7D32">${ICON.market}</i>시장</span><span><i style="border-color:#C2185B">${ICON.sight}</i>볼거리</span><span><i style="border-color:#1565C0">${ICON.massage}</i>마사지</span><span><i style="border-color:#6A4FD0">${ICON.home}</i>숙소</span>`;
     return d;
   };
   legend.addTo(LM);
@@ -1055,9 +1120,10 @@ function toggleLoc(){
   }, { enableHighAccuracy:true, maximumAge:15000, timeout:20000 });
 }
 function focusItem(id){
-  MS.day = 'all'; MS.kind = 'all';
+  /* 마사지는 '전체'에 안 보이니 마사지 필터로 바꿔서 보여줘요 */
+  MS.day = 'all'; MS.kind = id.startsWith('x-') ? 'massage' : 'all';
   document.querySelectorAll('.dayf').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.f==='all')));
-  document.querySelectorAll('.kindf').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.k==='all')));
+  document.querySelectorAll('.kindf').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.k===MS.kind)));
   renderPlaces('all');
   setMode('map');
   if(!LM || !MK[id]) return;
@@ -1086,7 +1152,7 @@ function mapView(){
   const colors = {1:'var(--d1)',2:'var(--d2)',3:'var(--d3)',4:'var(--d4)'};
   const chips = [['all','전체']].concat(DAYS.map((d,i)=>[String(i+1), d.n+' '+d.title])).map(c =>
     `<button class="chip dayf" type="button" data-f="${c[0]}" aria-pressed="${c[0]==='all'}">${c[0]!=='all'?`<span class="dot" style="color:${colors[c[0]]}"></span>`:''}${esc(c[1])}</button>`).join('');
-  const kinds = [['all','전체'],['sight','볼거리'],['rest','식당'],['market','시장'],['bar','바'],['place','장소']].map(k =>
+  const kinds = [['all','전체'],['sight','볼거리'],['rest','식당'],['market','시장'],['bar','바'],['place','장소'],['massage','마사지']].map(k =>
     `<button class="chip kindf" type="button" data-k="${k[0]}" aria-pressed="${k[0]==='all'}">${k[1]}</button>`).join('');
   const bases = BASES.map(b => `<button class="chip basef" type="button" data-b="${b[0]}" aria-pressed="${b[0]===MS.base}">${b[1]}</button>`).join('');
   return `<h2>지도</h2><p class="lead">저장한 식당과 장소를 지도에서 보고, 내 위치에서 가까운 곳을 찾아요. 핀을 누르면 대표 메뉴와 길찾기가 나와요.</p>
@@ -1209,6 +1275,36 @@ function marketCard(m){
     <p class="meta">${m.badge?`<span class="badge">${esc(m.badge)}</span>`:''}${esc(m.where)} · ${esc(m.hours)}</p>
     <p class="sig"><b>먹을 것</b> ${esc(m.eat)}</p><p class="rn">${esc(m.note)}</p><div class="acts">${links}${copyBtns(m.zh, addrOf(m.id, m.where, m.zh))}</div></div>`;
 }
+function massageCard(x){
+  const links = `<button class="lnk" type="button" data-showmap="x-${x.id}">지도에서 보기</button>` +
+    (x.link ? `<a class="lnk" href="${x.link}" target="_blank" rel="noopener">${esc(x.linkLabel||'상세')}</a>` : '') +
+    (x.tel ? `<a class="lnk" href="tel:${x.tel.replace(/-/g,'')}">전화 ${esc(x.tel)}</a>` : '') +
+    `<a class="lnk" href="${amap(x.zh)}" target="_blank" rel="noopener">Amap</a><a class="lnk" href="${gmap(x.zh + ' 厦门')}" target="_blank" rel="noopener">구글</a>`;
+  return `<div class="rest"><div class="top"><h4>${esc(x.ko)}</h4><span class="price">${esc(x.price)}</span></div>
+    <div class="zh">${esc(x.zh)}</div>
+    <p class="meta">${x.badge?`<span class="badge${x.badge==='영업 확인'?' hot':''}">${esc(x.badge)}</span>`:''}${esc(x.where)} · ${esc(x.hours)}${x.approx?' · <span class="approxnote">위치 대략</span>':''}</p>
+    <p class="sig">${esc(x.what)}</p><p class="rn">${esc(x.tip)}</p><div class="acts">${links}${copyBtns(x.zh, x.addr)}</div></div>`;
+}
+function massageSection(){
+  const areas = [...new Set(MASSAGE.map(x => x.area))];
+  return `<h2 style="margin-top:28px" id="massage">마사지 · 발마사지</h2><p class="lead">하루 걷고 난 저녁에 발마사지(足疗) 한 번. 지도 탭에서는 종류 필터 "마사지"를 눌러야 핀이 보여요.</p>
+    <div class="box alert"><h4>가기 전에 꼭</h4><ul>
+      <li><b>모든 가게 정보는 현지 확인 필요.</b> 조사 때 大众点评은 열 수 없었고, 바이두 지도 후기도 1~3건 수준이에요</li>
+      <li><b>선불 충전·회원카드(充值·办卡)는 하지 마세요.</b> 2026년 2월 대만 联合报 보도: 샤먼 유명 족욕점이 갑자기 폐업해 선불금 피해가 났어요</li>
+      <li>시작 전에 코스, 시간(분), 1인 가격, <b>4명 합계</b>를 확인하고 시작해요</li>
+      <li>加钟(시간 연장), 精油(오일), 拔罐(부항), 中药泡脚(한약 족욕) 같은 추가 권유는 "不用了,谢谢"로 거절</li>
+      <li>식사 직후는 피하고, 고혈압이 있으면 뜨거운 물과 강한 지압은 조심 ("我有高血压")</li>
+      <li>팁은 없어요</li>
+    </ul></div>
+    <div class="box"><h4>가격대 (1인, 참고)</h4><ul>
+      <li>동네 족욕 ¥80~150</li><li>대형 족욕+뷔페 ¥170~350</li><li>호텔 스파 ¥500+</li>
+      <li>목록에 없는 곳은 大众点评 앱에서 "附近 足疗"로 검색해 평점과 최근 후기를 보고 고르세요</li>
+    </ul></div>
+    ${areas.map(a => `<h4 style="margin:14px 0 0">${esc(a)}</h4>` + MASSAGE.filter(x => x.area===a).map(massageCard).join('')).join('')}
+    <div class="box gap"><h4>구랑위</h4><p>섬 안에서 영업이 확인된 마사지 가게는 찾지 못했어요. 쉬는 건 카페에서.</p></div>
+    <h3>마사지 받을 때 한마디</h3>
+    <ul class="plist">${talkRows(MASSAGE_TALK)}</ul>`;
+}
 function foodView(){
   const fchips = RFILTERS.map(f => `<button class="chip rf" type="button" data-f="${f[0]}" aria-pressed="${f[0]==='all'}">${esc(f[1])}</button>`).join('');
   const dict = DICT.map(g => `<h3>${esc(g.h)}</h3><div class="chips">${g.items.map(dishChip).join('')}</div>`).join('');
@@ -1232,6 +1328,7 @@ function foodView(){
       <li>튀김보다 찜 위주로 시키면 속이 편해요</li>
       <li>대부분 따뜻한 차가 기본이에요. 얼음물은 따로 요청</li>
     </ul></div>
+    ${massageSection()}
     <h2 style="margin-top:28px">음식 사전</h2><p class="lead">샤먼에서 자주 보는 음식이에요. 누르면 사진 검색이 열려요. 식당마다 메뉴가 다르니 실제 주문은 메뉴판을 보고 하세요.</p>
     ${dict}
     <h3>식당에서 쓰는 한마디</h3>
