@@ -198,6 +198,23 @@ h3{font-size:13px; letter-spacing:.06em; color:var(--muted); margin:26px 0 8px; 
 #photo .img{width:100%; aspect-ratio:4/3; background:var(--soft); display:flex; align-items:center; justify-content:center; color:var(--muted); font-size:14px}
 #photo img{width:100%; height:100%; object-fit:cover; display:block}
 #photo .img{cursor:pointer}
+/* 한마디: 어느 탭에서나 오른쪽 아래 버튼 */
+#talkBtn{position:fixed; right:max(14px, env(safe-area-inset-right, 0px)); bottom:calc(14px + env(safe-area-inset-bottom, 0px)); z-index:25;
+  font:inherit; font-size:15px; font-weight:700; color:var(--accent-ink); background:var(--accent); border:0; border-radius:999px; padding:11px 16px; cursor:pointer; box-shadow:0 3px 10px rgba(0,0,0,.3)}
+#talk{position:fixed; inset:0; z-index:30; background:rgba(0,0,0,.55); display:flex; align-items:flex-end; justify-content:center}
+#talk .sheet{background:var(--surface); color:var(--ink); width:100%; max-width:520px; max-height:82vh; overflow-y:auto; border-radius:16px 16px 0 0;
+  padding:12px 16px calc(16px + env(safe-area-inset-bottom, 0px))}
+#talk .head{display:flex; justify-content:space-between; align-items:center; gap:10px; position:sticky; top:-12px; background:var(--surface); padding:4px 0 8px; z-index:1}
+#talk .head b{font-size:17px}
+#talk .close{font:inherit; font-size:14px; font-weight:700; background:var(--soft); color:var(--accent); border:0; border-radius:999px; padding:7px 14px; cursor:pointer}
+#talk .chips{margin-bottom:6px}
+#talk .hint{font-size:12px; color:var(--muted); margin:0 0 4px}
+#big{position:fixed; inset:0; z-index:40; background:#fff; color:#111; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:18px; padding:24px; text-align:center; cursor:pointer}
+#big .z{font-family:var(--f-han); font-size:min(16vw, 84px); line-height:1.25; font-weight:700; word-break:break-all}
+#big .s{font-size:20px; color:#555}
+#big .x{position:absolute; bottom:calc(20px + env(safe-area-inset-bottom, 0px)); font-size:13px; color:#888}
+@media print{#talkBtn{display:none}}
+footer{padding-bottom:64px}
 #photo .txt{padding:12px max(16px, env(safe-area-inset-left, 0px)) 0}
 #photo .z{font-family:var(--f-han); font-size:26px; line-height:1.3}
 #photo .k{font-size:15px; color:var(--muted)}
@@ -244,6 +261,9 @@ footer{margin-top:32px; font-size:12px; color:var(--muted)}
 
 
 <div id="photo" hidden role="dialog" aria-modal="true" aria-label="음식 사진"></div>
+<button type="button" id="talkBtn" aria-label="한마디 열기">💬 한마디</button>
+<div id="talk" hidden role="dialog" aria-modal="true" aria-label="한마디"></div>
+<div id="big" hidden role="dialog" aria-modal="true" aria-label="크게 보기"></div>
 
 <script>
 /* ---------- 데이터 ---------- */
@@ -491,6 +511,32 @@ const FRUIT_TALK = [
   ['두 개요','两个','량 거'],
   ['잘라 주세요','可以帮我切一下吗?','커이 빵 워 치에 이샤 마?'],
   ['껍질 까 주세요 (유자처럼 두꺼운 껍질)','可以帮我剥一下吗?','커이 빵 워 빠오 이샤 마?'],
+];
+/* 한마디 시트(오른쪽 아래 버튼). [한국어, 중국어, 한글 발음] */
+const TALK = [
+  { h:'택시', items:[
+    ['여기로 가 주세요 (주소 보여주며)','请到这里','칭 따오 쩌리'],
+    ['여기서 세워 주세요','就在这里停','찌우 짜이 쩌리 팅'],
+    ['트렁크 열어 주세요','请开一下后备箱','칭 카이 이샤 허우뻬이샹'],
+    ['공항 가요','我去机场','워 취 지창'],
+    ['천천히 가 주세요','请开慢一点','칭 카이 만 이디엔'],
+  ]},
+  { h:'식당', items:[
+    ['이거 주세요','我要这个','워 야오 쩌거'],
+    ['고수 빼주세요','不要香菜','부야오 샹차이'],
+    ['맵지 않게','不要辣','부야오 라'],
+    ['담백하게','清淡一点','칭딴 이디엔'],
+    ['뜨거운 물 주세요','请给热水','칭 게이 러수이'],
+    ['얼음 빼고','不要冰','부야오 삥'],
+    ['계산해 주세요','买单','마이딴'],
+    ['포장해 주세요','打包','다빠오'],
+  ]},
+  { h:'과일·시장', items: FRUIT_TALK },
+  { h:'기본', items:[
+    ['화장실이 어디예요?','洗手间在哪里?','시서우지엔 짜이 날리?'],
+    ['알리페이 돼요?','可以用支付宝吗?','커이 융 즈푸바오 마?'],
+    ['감사합니다','谢谢','씨에씨에'],
+  ]},
 ];
 const DISH = {}; DICT.forEach(g => g.items.forEach(i => DISH[i[0]] = {ko:i[1], zh:i[2], alt:i[3]}));
 
@@ -827,7 +873,8 @@ function navLinks(it){
   h += `<a class="lnk" href="${gNav}" target="_blank" rel="noopener">구글</a>`;
   if(it.r && it.r.link) h += `<a class="lnk" href="${it.r.link}" target="_blank" rel="noopener">${esc(it.r.linkLabel||'상세')}</a>`;
   if(it.b && it.b.link) h += `<a class="lnk" href="${it.b.link}" target="_blank" rel="noopener">${it.b.link.includes('michelin') ? '미쉐린 가이드' : 'Ctrip'}</a>`;
-  if(it.zh) h += `<button class="copy" type="button" data-copy="${esc(it.zh)}">주소/이름 복사</button>`;
+  const cp = it.zh || (it.r && it.r.where) || (it.g && it.g.where);
+  if(cp) h += `<button class="copy" type="button" data-copy="${esc(cp)}">이름 복사</button>`;
   return h;
 }
 function itemBody(it){
@@ -993,7 +1040,7 @@ function sightCard(x){
   return `<div class="rest"><div class="top"><h4>${esc(x.ko)}</h4><span class="price">${esc(x.price)}</span></div>
     <div class="zh">${esc(x.zh)}</div>
     <p class="meta">${x.badge?`<span class="badge">${esc(x.badge)}</span>`:''}${esc(x.hours)}</p>
-    <p class="sig">${esc(x.what)}</p><p class="rn">${esc(x.tip)}</p><div class="acts">${links}</div></div>`;
+    <p class="sig">${esc(x.what)}</p><p class="rn">${esc(x.tip)}</p><div class="acts">${links}<button class="copy" type="button" data-copy="${esc(x.zh)}">이름 복사</button></div></div>`;
 }
 function mapView(){
   const colors = {1:'var(--d1)',2:'var(--d2)',3:'var(--d3)',4:'var(--d4)'};
@@ -1016,13 +1063,15 @@ function mapView(){
     <h3>가볼 만한 곳 · 대체 방문지</h3>
     <p class="lead">일정이 비거나 컨디션에 맞춰 바꿔 넣을 수 있는 곳이에요. 위치는 대략이라 갈 때는 Amap 버튼으로 찾으세요.</p>
     ${['숙소 근처','난푸퉈·샤먼대 쪽'].map(a => `<h4 style="margin:14px 0 0">${esc(a)}</h4>` + SIGHTS.filter(x => x.area===a).map(sightCard).join('')).join('')}
-    <h3 id="plTitle">장소 (택시, 지도앱용)</h3>
+    <h3 id="plTitle">택시 목적지 (디디에 붙여넣기)</h3>
+    <p class="lead">"복사"를 누르고 디디 앱 목적지 칸에 붙여넣으세요. 위의 날짜를 누르면 그날 갈 곳만 보여요. 식당은 맛집 탭이나 지도 핀에서 복사해요.</p>
     <ul class="plist" id="placeList"></ul>
     <h3>한마디</h3>
     <ul class="plist">${PHRASES.map(p=>`<li><div><div class="ko">${esc(p[0])}</div><div class="zh">${esc(p[1])}</div></div><div class="acts"><button class="copy" type="button" data-copy="${esc(p[1])}">복사</button></div></li>`).join('')}</ul>`;
 }
 function renderPlaces(f){
-  const list = PLACES.filter(p => f==='all' || p.days.includes(Number(f)));
+  const all = [...PLACES, ...MARKETS, ...SIGHTS];
+  const list = all.filter(p => f==='all' || p.days.includes(Number(f)));
   $('#placeList').innerHTML = list.map(placeItem).join('');
   MS.day = f;
   drawMarkers(); fitVisible(); renderNear();
@@ -1034,13 +1083,14 @@ function restCard(r){
   const links = `<button class="lnk" type="button" data-showmap="r-${r.id}">지도에서 보기</button>` + (r.link ? `<a class="lnk" href="${r.link}" target="_blank" rel="noopener">${esc(r.linkLabel||'상세')}</a>` : '') + (r.zh ? `<a class="lnk" href="${amap(r.zh)}" target="_blank" rel="noopener">Amap</a>` : '') +
     `<a class="lnk" href="${gmap(q)}" target="_blank" rel="noopener">구글</a>` +
     (r.zh ? `<a class="lnk" href="${picCN(r.zh)}" target="_blank" rel="noopener">사진</a>` : '');
+  const cp = r.zh || r.where;
   return `<div class="rest" data-tags="${r.tags.join(' ')}">
     <div class="top"><h4>${esc(r.ko)}</h4>${r.price?`<span class="price">${esc(r.price)}</span>`:''}</div>
     ${r.zh?`<div class="zh">${esc(r.zh)}</div>`:''}
     <p class="meta">${r.badge?`<span class="badge ${r.hot?'hot':''}">${esc(r.badge)}</span>`:''}${esc(r.where)} · ${esc(r.area)}</p>
     <p class="sig"><b>대표</b> ${esc(r.sig)}</p>
     <p class="rn">${esc(r.rn)}</p>
-    <div class="acts">${links}</div></div>`;
+    <div class="acts">${links}<button class="copy" type="button" data-copy="${esc(cp)}">이름 복사</button></div></div>`;
 }
 /* 메뉴를 누르면 그 음식 사진 검색이 새 탭으로 열려요 (중국어 이름으로 검색해야 정확) */
 /* 음식 사진: 위키미디어 공용의 자유 이용 사진만 사용 (출처·라이선스 표시). 없는 음식은 사진 없이 이름만 크게 보여줌 */
@@ -1095,13 +1145,30 @@ function openPhoto(id){
   $('#photo').hidden = false;
 }
 function closePhoto(){ $('#photo').hidden = true; $('#photo').innerHTML = ''; }
+let talkGroup = 0;
+function talkRows(items){
+  return items.map(m => `<li><div><div class="ko">${esc(m[0])}</div><div class="zh">${esc(m[1])}</div><div class="say">${esc(m[2])}</div></div>
+    <div class="acts"><button class="lnk" type="button" data-big="${esc(m[1])}" data-say="${esc(m[2])}">크게</button><button class="copy" type="button" data-copy="${esc(m[1])}">복사</button></div></li>`).join('');
+}
+function openTalk(){
+  const chips = TALK.map((g,i) => `<button class="chip tg" type="button" data-g="${i}" aria-pressed="${i===talkGroup}">${esc(g.h)}</button>`).join('');
+  $('#talk').innerHTML = `<div class="sheet" role="document"><div class="head"><b>한마디</b><button type="button" class="close" data-close-talk>닫기</button></div>
+    <div class="chips">${chips}</div><p class="hint">"크게"를 누르면 글자를 화면 가득 보여줘요. 파란 글씨는 비슷한 한글 발음.</p>
+    <ul class="plist" id="talkList">${talkRows(TALK[talkGroup].items)}</ul></div>`;
+  $('#talk').hidden = false;
+}
+function closeTalk(){ $('#talk').hidden = true; $('#talk').innerHTML = ''; }
+function openBig(zh, say){
+  $('#big').innerHTML = `<div class="z">${esc(zh)}</div>${say?`<div class="s">${esc(say)}</div>`:''}<div class="x">아무 데나 누르면 닫혀요</div>`;
+  $('#big').hidden = false;
+}
 function marketCard(m){
   const links = (m.nopin ? '' : `<button class="lnk" type="button" data-showmap="m-${m.id}">지도에서 보기</button>`) +
     `<a class="lnk" href="${amap(m.zh)}" target="_blank" rel="noopener">Amap</a><a class="lnk" href="${gmap(m.zh + ' 厦门')}" target="_blank" rel="noopener">구글</a>`;
   return `<div class="rest"><div class="top"><h4>${esc(m.ko)}</h4><span class="badge${m.type==='야시장'?' hot':''}">${esc(m.type==='아침'?'아침시장':'야시장')}</span></div>
     <div class="zh">${esc(m.zh)}</div>
     <p class="meta">${m.badge?`<span class="badge">${esc(m.badge)}</span>`:''}${esc(m.where)} · ${esc(m.hours)}</p>
-    <p class="sig"><b>먹을 것</b> ${esc(m.eat)}</p><p class="rn">${esc(m.note)}</p><div class="acts">${links}</div></div>`;
+    <p class="sig"><b>먹을 것</b> ${esc(m.eat)}</p><p class="rn">${esc(m.note)}</p><div class="acts">${links}<button class="copy" type="button" data-copy="${esc(m.zh)}">이름 복사</button></div></div>`;
 }
 function foodView(){
   const fchips = RFILTERS.map(f => `<button class="chip rf" type="button" data-f="${f[0]}" aria-pressed="${f[0]==='all'}">${esc(f[1])}</button>`).join('');
@@ -1211,9 +1278,14 @@ async function onClick(e){
   if((b = t.closest('[data-photo]'))){ openPhoto(b.dataset.photo); return; }
   if(t.closest('[data-close-photo]') || t.id === 'photo' || t.closest('#photo .img')){ closePhoto(); return; }
   if((b = t.closest('.copy'))){ await doCopy(b.dataset.copy, b); return; }
+  if(t.closest('#talkBtn')){ openTalk(); return; }
+  if(t.closest('#big')){ $('#big').hidden = true; return; }
+  if((b = t.closest('[data-big]'))){ openBig(b.dataset.big, b.dataset.say); return; }
+  if((b = t.closest('.tg'))){ talkGroup = Number(b.dataset.g); document.querySelectorAll('.tg').forEach(x => x.setAttribute('aria-pressed', String(x === b))); $('#talkList').innerHTML = talkRows(TALK[talkGroup].items); return; }
+  if(t.closest('[data-close-talk]') || t.id === 'talk'){ closeTalk(); return; }
 }
 document.addEventListener('click', onClick);
-document.addEventListener('keydown', e => { if(e.key === 'Escape' && !$('#photo').hidden) closePhoto(); });
+document.addEventListener('keydown', e => { if(e.key !== 'Escape') return; if(!$('#big').hidden) $('#big').hidden = true; else if(!$('#talk').hidden) closeTalk(); else if(!$('#photo').hidden) closePhoto(); });
 views.addEventListener('change', e => {
   const k = e.target.dataset && e.target.dataset.key; if(!k) return;
   const o = lsGet('xiamen-checks-v2', {}); if(e.target.checked) o[k]=1; else delete o[k]; lsSet('xiamen-checks-v2', o);
